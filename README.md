@@ -1,39 +1,22 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# AnotherRunner
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages). 
+Open-source pedometer and run tracker application.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages). 
--->
+## Firebase Configuration
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+This project uses Firebase for authentication and database.
 
-## Features
+1. Create a project in the [Firebase Console](https://console.firebase.google.com/).
+2. Enable the authentication providers: Google and Email/Password.
+3. Enable Cloud Firestore.
+4. Install the [FlutterFire CLI](https://firebase.flutter.dev/docs/cli/).
+5. At the root of the project, run: `flutterfire configure`
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+## Google Maps Configuration
 
-## Getting started
+For security reasons, the Maps API key is not included in this repository.
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
-```dart
-const like = 'sample';
-```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+1. Generate an API Key in the [Google Cloud Console](https://console.cloud.google.com/) with Maps SDK for Android enabled.
+2. Open the file `android/local.properties`.
+3. Add the following line at the end of the file:
+   `MAPS_API_KEY=YOUR_API_KEY_HERE`

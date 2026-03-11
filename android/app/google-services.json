@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1049630213063",
+    "project_id": "yarayetanotherrunnerapp",
+    "storage_bucket": "yarayetanotherrunnerapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1049630213063:android:dca6ad458e595ba5b08fe2",
+        "android_client_info": {
+          "package_name": "com.matheussilvagarcia.anotherrunner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1049630213063-r2q25gr2t463iia308t06jt1ruoajtho.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.matheussilvagarcia.anotherrunner",
+            "certificate_hash": "02f66e76982a53efaa9ba4782506410734daf1fe"
+          }
+        },
+        {
+          "client_id": "1049630213063-eum06jfp8t62ej7fb7gdh23l252qcj8p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAp3h869u0ujQGpPPmvOEwqAiiLRuoLCBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1049630213063-eum06jfp8t62ej7fb7gdh23l252qcj8p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1049630213063-vpoqe0guu4rsc9pd7r5tkmlgtkoac5u7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.matheussilvagarcia.anotherrunner"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
