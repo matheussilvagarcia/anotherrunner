@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_service.dart';
 import 'run_screen.dart';
+import 'history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -103,6 +104,15 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HistoryScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => AuthService().signOut(),
