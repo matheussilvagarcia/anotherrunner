@@ -4,6 +4,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class RunScreen extends StatefulWidget {
   const RunScreen({super.key});
@@ -14,6 +16,8 @@ class RunScreen extends StatefulWidget {
 
 class _RunScreenState extends State<RunScreen> {
   final Completer<GoogleMapController> _controller = Completer();
+  final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
+
   StreamSubscription<Position>? _positionStream;
   Timer? _timer;
 
@@ -31,7 +35,54 @@ class _RunScreenState extends State<RunScreen> {
   @override
   void initState() {
     super.initState();
+    _initNotifications();
     _locateUser();
+  }
+
+  Future<void> _initNotifications() async {
+    await Permission.notification.request();
+
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('ic_notification');
+
+    const InitializationSettings initializationSettings =
+    InitializationSettings(android: initializationSettingsAndroid);
+
+    await _notificationsPlugin.initialize(
+      settings: initializationSettings,
+    );
+  }
+
+  Future<void> _showOngoingNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'running_channel_id',
+      'Running Tracker',
+      channelDescription: 'Active run metrics',
+      importance: Importance.low,
+      priority: Priority.low,
+      ongoing: true,
+      autoCancel: false,
+      showWhen: false,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    final String time = _formatTime(_secondsElapsed);
+    final String dist = _distanceKm.toStringAsFixed(2);
+    final String paceStr = _formatPace(_pace);
+
+    await _notificationsPlugin.show(
+      id: 0,
+      title: 'Run in progress',
+      body: 'Time: $time  |  Dist: $dist km  |  Pace: $paceStr/km',
+      notificationDetails: platformChannelSpecifics,
+    );
+  }
+
+  Future<void> _cancelNotification() async {
+    await _notificationsPlugin.cancel(id: 0);
   }
 
   Future<void> _locateUser() async {
@@ -64,6 +115,7 @@ class _RunScreenState extends State<RunScreen> {
           _pace = (_secondsElapsed / 60) / _distanceKm;
         }
       });
+      _showOngoingNotification();
     });
 
     _positionStream = Geolocator.getPositionStream(
@@ -109,6 +161,7 @@ class _RunScreenState extends State<RunScreen> {
     });
     _timer?.cancel();
     _positionStream?.pause();
+    _cancelNotification();
   }
 
   Future<void> _moveCamera(LatLng position) async {
@@ -134,11 +187,14 @@ class _RunScreenState extends State<RunScreen> {
 
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
+      final calories = _distanceKm * 70.0;
+
       final runData = {
         'timestamp': FieldValue.serverTimestamp(),
         'durationSeconds': _secondsElapsed,
         'distanceKm': _distanceKm,
         'averagePace': _pace,
+        'calories': calories,
         'route': _route.map((p) => {'lat': p.latitude, 'lng': p.longitude}).toList(),
       };
 
@@ -158,6 +214,7 @@ class _RunScreenState extends State<RunScreen> {
   void dispose() {
     _timer?.cancel();
     _positionStream?.cancel();
+    _cancelNotification();
     super.dispose();
   }
 
@@ -208,7 +265,14 @@ class _RunScreenState extends State<RunScreen> {
                   children: [
                     _buildRunMetric('TIME', _formatTime(_secondsElapsed)),
                     _buildRunMetric('PACE', '${_formatPace(_pace)} /km'),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
                     _buildRunMetric('DISTANCE', '${_distanceKm.toStringAsFixed(2)} km'),
+                    _buildRunMetric('CALORIES', '${(_distanceKm * 70).toStringAsFixed(0)} kcal'),
                   ],
                 ),
                 const SizedBox(height: 24),

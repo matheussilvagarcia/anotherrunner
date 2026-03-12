@@ -13,6 +13,7 @@ import java.util.Properties
             ndkVersion = flutter.ndkVersion
 
             compileOptions {
+                isCoreLibraryDesugaringEnabled = true
                 sourceCompatibility = JavaVersion.VERSION_17
                 targetCompatibility = JavaVersion.VERSION_17
             }
@@ -27,7 +28,7 @@ import java.util.Properties
 
             defaultConfig {
                 applicationId = "com.matheussilvagarcia.anotherrunner"
-                minSdk = flutter.minSdkVersion
+                minSdk = 26
                 targetSdk = flutter.targetSdkVersion
                 versionCode = flutter.versionCode
                 versionName = flutter.versionName
@@ -49,4 +50,8 @@ import java.util.Properties
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
