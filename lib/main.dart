@@ -6,6 +6,7 @@ import 'firebase_options.dart';
 import 'auth_service.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
+import 'run_service.dart';
 
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
@@ -17,6 +18,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await initializeService();
 
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('isDarkMode') ?? false;

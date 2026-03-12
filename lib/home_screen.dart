@@ -36,6 +36,21 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _initPedometer();
     _loadLastSyncAndAutoSync();
+    _checkForActiveRun();
+  }
+
+  Future<void> _checkForActiveRun() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isRunActive = prefs.getBool('isRunActive') ?? false;
+
+    if (isRunActive) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const RunScreen()),
+        );
+      });
+    }
   }
 
   Future<void> _loadLastSyncAndAutoSync() async {

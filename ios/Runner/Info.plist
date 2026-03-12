@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>We need your location in the background to keep tracking your run even when the app is minimized.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We need your location in the background to keep tracking your run even when the app is minimized.</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>location</string>
+    </array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
