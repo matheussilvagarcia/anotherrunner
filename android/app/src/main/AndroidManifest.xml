@@ -20,7 +20,7 @@
     </queries>
 
     <application
-        android:label="anotherrunner"
+        android:label="YARA"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
