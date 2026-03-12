@@ -5,11 +5,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:health/health.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'auth_service.dart';
 import 'run_screen.dart';
 import 'history_screen.dart';
 import 'daily_history_screen.dart';
+import 'chart_screen.dart';
 import 'main.dart';
+import 'purchase_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -338,6 +341,80 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _showPremiumDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          elevation: 10,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).brightness == Brightness.dark ? Colors.grey[900]! : Colors.white,
+                  Theme.of(context).brightness == Brightness.dark ? Colors.grey[850]! : Colors.blue[50]!,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.workspace_premium, color: Colors.amber, size: 72),
+                const SizedBox(height: 16),
+                const Text(
+                  'Unlock Premium Charts',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Get access to detailed weekly and monthly averages. Track your progress in calories, steps, distance, and running time visually and reach your goals faster!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 15, height: 1.4),
+                ),
+                const SizedBox(height: 28),
+                SizedBox(
+                  width: double.infinity,
+                  height: 54,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber,
+                      foregroundColor: Colors.black,
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(27),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      PurchaseService().buyPremiumCharts();
+                    },
+                    child: Text(
+                      PurchaseService().products.isNotEmpty
+                          ? 'Comprar por ${PurchaseService().products.first.price}'
+                          : 'Comprar Agora',
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Talvez mais tarde', style: TextStyle(color: Colors.grey)),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final String distance = (_stepsToday * 0.000762).toStringAsFixed(2);
@@ -354,6 +431,19 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.bar_chart, color: Colors.amberAccent, size: 28),
+            onPressed: () {
+              if (PurchaseService().isPremiumUser) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ChartScreen()),
+                );
+              } else {
+                _showPremiumDialog();
+              }
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.calendar_month),
             onPressed: () {
@@ -461,7 +551,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 28,
                 child: OutlinedButton.icon(
                   onPressed: _syncWithHealthConnect,
-                  icon: const Icon(Icons.health_and_safety, size: 18, color: Colors.green),
+                  icon: SvgPicture.asset(
+                    'lib/assets/HealthConnect.svg',
+                    width: 18,
+                    height: 18,
+                  ),
                   label: const Text(
                     'Sync Health Connect',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),

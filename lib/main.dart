@@ -7,19 +7,18 @@ import 'auth_service.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
 import 'run_service.dart';
+import 'purchase_service.dart';
 
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await dotenv.load(fileName: ".env");
-
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   await initializeService();
+  PurchaseService().initialize();
 
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('isDarkMode') ?? false;
@@ -37,7 +36,7 @@ class AnotherRunnerApp extends StatelessWidget {
       valueListenable: themeNotifier,
       builder: (_, ThemeMode currentMode, __) {
         return MaterialApp(
-          title: 'AnotherRunner',
+          title: 'YARA',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
               seedColor: Colors.blue,

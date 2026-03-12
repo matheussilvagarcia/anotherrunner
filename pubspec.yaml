@@ -29,6 +29,9 @@ dependencies:
   flutter_background_service: ^5.1.0
   flutter_background_service_android: ^6.3.1
   flutter_launcher_icons: ^0.13.1
+  fl_chart: ^1.1.1
+  flutter_svg: ^2.2.4
+  in_app_purchase: ^3.2.3
 
 dev_dependencies:
   flutter_test:
@@ -39,6 +42,7 @@ flutter:
   uses-material-design: true
   assets:
     - .env
+    - lib/assets/
 flutter_launcher_icons:
   android: true
   ios: true

@@ -7,46 +7,64 @@ plugins {
 import java.util.Properties
         import java.io.FileInputStream
 
-        android {
-            namespace = "com.matheussilvagarcia.anotherrunner"
-            compileSdk = flutter.compileSdkVersion
-            ndkVersion = flutter.ndkVersion
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
 
-            compileOptions {
-                isCoreLibraryDesugaringEnabled = true
-                sourceCompatibility = JavaVersion.VERSION_17
-                targetCompatibility = JavaVersion.VERSION_17
-            }
+android {
+    namespace = "com.matheussilvagarcia.anotherrunner"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
 
-            buildFeatures {
-                buildConfig = true
-            }
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_17.toString()
-            }
+    buildFeatures {
+        buildConfig = true
+    }
 
-            defaultConfig {
-                applicationId = "com.matheussilvagarcia.anotherrunner"
-                minSdk = 26
-                targetSdk = flutter.targetSdkVersion
-                versionCode = flutter.versionCode
-                versionName = flutter.versionName
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
 
-                val properties = Properties()
-                val propertiesFile = project.rootProject.file("local.properties")
-                if (propertiesFile.exists()) {
-                    properties.load(FileInputStream(propertiesFile))
-                }
-                manifestPlaceholders["MAPS_API_KEY"] = properties.getProperty("MAPS_API_KEY") ?: ""
-            }
+    defaultConfig {
+        applicationId = "com.matheussilvagarcia.anotherrunner"
+        minSdk = 26
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
 
-            buildTypes {
-                release {
-                    signingConfig = signingConfigs.getByName("debug")
-                }
-            }
+        val properties = Properties()
+        val propertiesFile = project.rootProject.file("local.properties")
+        if (propertiesFile.exists()) {
+            properties.load(FileInputStream(propertiesFile))
         }
+        manifestPlaceholders["MAPS_API_KEY"] = properties.getProperty("MAPS_API_KEY") ?: ""
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+            val storeFilePath = keystoreProperties.getProperty("storeFile")
+            if (storeFilePath != null) {
+                storeFile = file(storeFilePath)
+            }
+            storePassword = keystoreProperties.getProperty("storePassword")
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+}
 
 flutter {
     source = "../.."
