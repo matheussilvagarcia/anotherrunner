@@ -1,9 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    serverClientId: '1049630213063-eum06jfp8t62ej7fb7gdh23l252qcj8p.apps.googleusercontent.com',
+  );
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
@@ -14,7 +18,7 @@ class AuthService {
           password: password
       );
     } catch (e) {
-      print('Email sign in error: $e');
+      debugPrint('Email sign in error: $e');
       return null;
     }
   }
@@ -26,38 +30,36 @@ class AuthService {
           password: password
       );
     } catch (e) {
-      print('Email registration error: $e');
+      debugPrint('Email registration error: $e');
       return null;
     }
   }
 
   Future<UserCredential?> signInWithGoogle() async {
     try {
-      await _googleSignIn.initialize();
-
-      final GoogleSignInAccount? googleUser = await _googleSignIn.authenticate();
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return null;
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
       return await _auth.signInWithCredential(credential);
     } catch (e) {
-      print('Google sign in error: $e');
+      debugPrint('Google sign in error: $e');
       return null;
     }
   }
 
   Future<void> signOut() async {
     try {
-      await _googleSignIn.initialize();
-      await _googleSignIn.disconnect();
+      await _googleSignIn.signOut();
+      await _auth.signOut();
     } catch (e) {
-      print('Google sign out error: $e');
+      debugPrint('Sign out error: $e');
     }
-    await _auth.signOut();
   }
 }
