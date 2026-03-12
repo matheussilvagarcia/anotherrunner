@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 
 class RunScreen extends StatefulWidget {
   const RunScreen({super.key});
@@ -16,10 +19,7 @@ class RunScreen extends StatefulWidget {
 
 class _RunScreenState extends State<RunScreen> {
   final Completer<GoogleMapController> _controller = Completer();
-  final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
-
-  StreamSubscription<Position>? _positionStream;
-  Timer? _timer;
+  StreamSubscription<Map<String, dynamic>?>? _serviceSubscription;
 
   List<LatLng> _route = [];
   Set<Polyline> _polylines = {};
@@ -35,54 +35,88 @@ class _RunScreenState extends State<RunScreen> {
   @override
   void initState() {
     super.initState();
-    _initNotifications();
     _locateUser();
+    _recoverRunState();
+    _listenToService();
   }
 
-  Future<void> _initNotifications() async {
-    await Permission.notification.request();
+  void _listenToService() {
+    _serviceSubscription = FlutterBackgroundService().on('update').listen((event) {
+      if (event == null) return;
+      if (!mounted) return;
 
-    const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('ic_notification');
-
-    const InitializationSettings initializationSettings =
-    InitializationSettings(android: initializationSettingsAndroid);
-
-    await _notificationsPlugin.initialize(
-      settings: initializationSettings,
-    );
+      setState(() {
+        if (event.containsKey('seconds')) {
+          _secondsElapsed = event['seconds'];
+        }
+        if (event.containsKey('distance')) {
+          _distanceKm = event['distance'];
+          if (_distanceKm > 0) {
+            _pace = (_secondsElapsed / 60) / _distanceKm;
+          }
+        }
+        if (event.containsKey('lat') && event.containsKey('lng')) {
+          final newLatLng = LatLng(event['lat'], event['lng']);
+          _route.add(newLatLng);
+          _polylines.add(
+            Polyline(
+              polylineId: const PolylineId('route'),
+              points: _route,
+              color: Colors.blue,
+              width: 5,
+            ),
+          );
+          _moveCamera(newLatLng);
+        }
+      });
+    });
   }
 
-  Future<void> _showOngoingNotification() async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
-      'running_channel_id',
-      'Running Tracker',
-      channelDescription: 'Active run metrics',
-      importance: Importance.low,
-      priority: Priority.low,
-      ongoing: true,
-      autoCancel: false,
-      showWhen: false,
-    );
+  Future<void> _recoverRunState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isActive = prefs.getBool('isRunActive') ?? false;
 
-    const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+    setState(() {
+      _secondsElapsed = prefs.getInt('runSeconds') ?? 0;
+      _distanceKm = prefs.getDouble('runDistance') ?? 0.0;
+      if (_distanceKm > 0) {
+        _pace = (_secondsElapsed / 60) / _distanceKm;
+      }
 
-    final String time = _formatTime(_secondsElapsed);
-    final String dist = _distanceKm.toStringAsFixed(2);
-    final String paceStr = _formatPace(_pace);
+      final routeString = prefs.getString('runRoute');
+      if (routeString != null) {
+        final List decoded = jsonDecode(routeString);
+        _route = decoded.map((p) => LatLng(p['lat'], p['lng'])).toList();
+        if (_route.isNotEmpty) {
+          _polylines.add(
+            Polyline(
+              polylineId: const PolylineId('route'),
+              points: _route,
+              color: Colors.blue,
+              width: 5,
+            ),
+          );
+        }
+      }
+    });
 
-    await _notificationsPlugin.show(
-      id: 0,
-      title: 'Run in progress',
-      body: 'Time: $time  |  Dist: $dist km  |  Pace: $paceStr/km',
-      notificationDetails: platformChannelSpecifics,
-    );
+    if (isActive) {
+      setState(() {
+        _isRunning = true;
+      });
+      final isRunningInBg = await FlutterBackgroundService().isRunning();
+      if (!isRunningInBg) {
+        FlutterBackgroundService().startService();
+      }
+    }
   }
 
-  Future<void> _cancelNotification() async {
-    await _notificationsPlugin.cancel(id: 0);
+  Future<void> _clearRunState() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isRunActive', false);
+    await prefs.remove('runSeconds');
+    await prefs.remove('runDistance');
+    await prefs.remove('runRoute');
   }
 
   Future<void> _locateUser() async {
@@ -108,60 +142,18 @@ class _RunScreenState extends State<RunScreen> {
       _isRunning = true;
     });
 
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _secondsElapsed++;
-        if (_distanceKm > 0) {
-          _pace = (_secondsElapsed / 60) / _distanceKm;
-        }
-      });
-      _showOngoingNotification();
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setBool('isRunActive', true);
     });
 
-    _positionStream = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 5,
-      ),
-    ).listen((Position position) {
-      final newLatLng = LatLng(position.latitude, position.longitude);
-
-      if (_route.isNotEmpty) {
-        final lastLatLng = _route.last;
-        final distanceInMeters = Geolocator.distanceBetween(
-          lastLatLng.latitude,
-          lastLatLng.longitude,
-          newLatLng.latitude,
-          newLatLng.longitude,
-        );
-        setState(() {
-          _distanceKm += distanceInMeters / 1000;
-        });
-      }
-
-      setState(() {
-        _route.add(newLatLng);
-        _polylines.add(
-          Polyline(
-            polylineId: const PolylineId('route'),
-            points: _route,
-            color: Colors.blue,
-            width: 5,
-          ),
-        );
-      });
-
-      _moveCamera(newLatLng);
-    });
+    FlutterBackgroundService().startService();
   }
 
   void _pauseRun() {
     setState(() {
       _isRunning = false;
     });
-    _timer?.cancel();
-    _positionStream?.pause();
-    _cancelNotification();
+    FlutterBackgroundService().invoke('stopService');
   }
 
   Future<void> _moveCamera(LatLng position) async {
@@ -205,6 +197,8 @@ class _RunScreenState extends State<RunScreen> {
           .add(runData);
     }
 
+    await _clearRunState();
+
     if (mounted) {
       Navigator.pop(context);
     }
@@ -212,9 +206,7 @@ class _RunScreenState extends State<RunScreen> {
 
   @override
   void dispose() {
-    _timer?.cancel();
-    _positionStream?.cancel();
-    _cancelNotification();
+    _serviceSubscription?.cancel();
     super.dispose();
   }
 
