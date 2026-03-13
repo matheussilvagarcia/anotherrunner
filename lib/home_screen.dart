@@ -7,14 +7,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:health/health.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:anotherrunner/l10n/app_localizations.dart';
 import 'auth_service.dart';
-import 'run_screen.dart';
+import 'package:anotherrunner/run_screen.dart';
 import 'history_screen.dart';
 import 'daily_history_screen.dart';
 import 'chart_screen.dart';
 import 'main.dart';
 import 'purchase_service.dart';
+import 'credits_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const RunScreen()),
+          MaterialPageRoute(builder: (context) => RunScreen()), // Sem o const!
         );
       });
     }
@@ -363,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!mounted) return;
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const RunScreen()),
+        MaterialPageRoute(builder: (context) => RunScreen()), // Sem o const!
       );
     } else {
       if (!mounted) return;
@@ -447,6 +448,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
+
   void _showLanguageDialog() {
     final l10n = AppLocalizations.of(context)!;
 
@@ -566,13 +568,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),
-                onSelected: (String value) {
-                  if (value == 'privacy') {
-                  } else if (value == 'credits') {
-                  } else if (value == 'language') {
-                    _showLanguageDialog();
-                  }
-                },
+        onSelected: (String value) {
+          if (value == 'privacy') {
+            // Opcional no futuro
+          } else if (value == 'credits') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const CreditsScreen()),
+            );
+          } else if (value == 'language') {
+            _showLanguageDialog();
+          }
+        },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   PopupMenuItem<String>(
                     value: 'privacy',

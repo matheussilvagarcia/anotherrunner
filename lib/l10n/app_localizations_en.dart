@@ -73,6 +73,97 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hcPermissionDenied => 'Permission denied to access Health data.';
 
   @override
+  String get capturedByHealthConnect => 'Captured by Health Connect';
+
+  @override
+  String get activityAverages => 'Activity Averages';
+
+  @override
+  String get last7Days => 'Last 7 Days';
+
+  @override
+  String get monthlyAverages => 'Monthly Averages';
+
+  @override
+  String get chartSteps => 'Steps';
+
+  @override
+  String get chartCalories => 'Calories (kcal)';
+
+  @override
+  String get chartDistance => 'Distance (km)';
+
+  @override
+  String get chartDuration => 'Duration (min)';
+
+  @override
   String get locationPermissionRequired =>
       'Location permission is required to track your run.';
+
+  @override
+  String get runHistory => 'Run History';
+
+  @override
+  String get authenticationRequired => 'Authentication required';
+
+  @override
+  String get noRunsRecorded => 'No runs recorded yet.';
+
+  @override
+  String shareRunMessage(String date) {
+    return 'Check out my run on AnotherRunner on $date!';
+  }
+
+  @override
+  String get dailyActivity => 'Daily Activity';
+
+  @override
+  String get noDailyRecords => 'No daily records yet.';
+
+  @override
+  String get unknownDate => 'Unknown';
+
+  @override
+  String get currentRun => 'Current Run';
+
+  @override
+  String get timeLabel => 'TIME';
+
+  @override
+  String get paceLabel => 'PACE';
+
+  @override
+  String get distanceLabel => 'DISTANCE';
+
+  @override
+  String get caloriesLabel => 'CALORIES';
+
+  @override
+  String get runningTracker => 'Running Tracker';
+
+  @override
+  String get activeRunMetrics => 'Active run metrics';
+
+  @override
+  String get runInProgress => 'Run in progress';
+
+  @override
+  String get starting => 'Starting...';
+
+  @override
+  String notificationBody(String time, String dist, String pace) {
+    return 'Time: $time  |  Dist: $dist km  |  Pace: $pace/km';
+  }
+
+  @override
+  String get developedBy => 'Developed by';
+
+  @override
+  String get contactMe => 'Contact Me';
+
+  @override
+  String get githubProfile => 'GitHub Profile';
+
+  @override
+  String get visitPortfolio => 'Visit my Portfolio';
 }

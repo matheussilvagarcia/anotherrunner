@@ -20,5 +20,54 @@
   "hcSyncSuccess": "Data synced! Runs added to history.",
   "hcNoData": "No health data found for today.",
   "hcPermissionDenied": "Permission denied to access Health data.",
-  "locationPermissionRequired": "Location permission is required to track your run."
+          "capturedByHealthConnect": "Captured by Health Connect",
+          "activityAverages": "Activity Averages",
+            "last7Days": "Last 7 Days",
+            "monthlyAverages": "Monthly Averages",
+            "chartSteps": "Steps",
+            "chartCalories": "Calories (kcal)",
+            "chartDistance": "Distance (km)",
+            "chartDuration": "Duration (min)",
+  "locationPermissionRequired": "Location permission is required to track your run.",
+  "runHistory": "Run History",
+    "authenticationRequired": "Authentication required",
+    "noRunsRecorded": "No runs recorded yet.",
+    "shareRunMessage": "Check out my run on AnotherRunner on {date}!",
+    "@shareRunMessage": {
+      "placeholders": {
+        "date": {
+          "type": "String"
+        }
+      }
+      },
+      "dailyActivity": "Daily Activity",
+        "noDailyRecords": "No daily records yet.",
+        "unknownDate": "Unknown",
+        "currentRun": "Current Run",
+          "timeLabel": "TIME",
+          "paceLabel": "PACE",
+          "distanceLabel": "DISTANCE",
+          "caloriesLabel": "CALORIES",
+          "runningTracker": "Running Tracker",
+            "activeRunMetrics": "Active run metrics",
+            "runInProgress": "Run in progress",
+            "starting": "Starting...",
+            "notificationBody": "Time: {time}  |  Dist: {dist} km  |  Pace: {pace}/km",
+            "@notificationBody": {
+              "placeholders": {
+                "time": {
+                  "type": "String"
+                },
+                "dist": {
+                  "type": "String"
+                },
+                "pace": {
+                  "type": "String"
+                }
+              }
+            },
+            "developedBy": "Developed by",
+              "contactMe": "Contact Me",
+              "githubProfile": "GitHub Profile",
+              "visitPortfolio": "Visit my Portfolio"
 }

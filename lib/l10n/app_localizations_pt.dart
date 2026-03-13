@@ -75,6 +75,97 @@ class AppLocalizationsPt extends AppLocalizations {
       'Permissão negada para acessar dados de saúde.';
 
   @override
+  String get capturedByHealthConnect => 'Capturado pelo Health Connect';
+
+  @override
+  String get activityAverages => 'Médias de Atividade';
+
+  @override
+  String get last7Days => 'Últimos 7 Dias';
+
+  @override
+  String get monthlyAverages => 'Médias Mensais';
+
+  @override
+  String get chartSteps => 'Passos';
+
+  @override
+  String get chartCalories => 'Calorias (kcal)';
+
+  @override
+  String get chartDistance => 'Distância (km)';
+
+  @override
+  String get chartDuration => 'Duração (min)';
+
+  @override
   String get locationPermissionRequired =>
       'A permissão de localização é necessária para rastrear sua corrida.';
+
+  @override
+  String get runHistory => 'Histórico de Corridas';
+
+  @override
+  String get authenticationRequired => 'Autenticação necessária';
+
+  @override
+  String get noRunsRecorded => 'Nenhuma corrida registrada ainda.';
+
+  @override
+  String shareRunMessage(String date) {
+    return 'Confira minha corrida no AnotherRunner em $date!';
+  }
+
+  @override
+  String get dailyActivity => 'Atividade Diária';
+
+  @override
+  String get noDailyRecords => 'Nenhum registro diário ainda.';
+
+  @override
+  String get unknownDate => 'Desconhecido';
+
+  @override
+  String get currentRun => 'Corrida Atual';
+
+  @override
+  String get timeLabel => 'TEMPO';
+
+  @override
+  String get paceLabel => 'RITMO';
+
+  @override
+  String get distanceLabel => 'DISTÂNCIA';
+
+  @override
+  String get caloriesLabel => 'CALORIAS';
+
+  @override
+  String get runningTracker => 'Rastreador de Corrida';
+
+  @override
+  String get activeRunMetrics => 'Métricas da corrida ativa';
+
+  @override
+  String get runInProgress => 'Corrida em andamento';
+
+  @override
+  String get starting => 'Iniciando...';
+
+  @override
+  String notificationBody(String time, String dist, String pace) {
+    return 'Tempo: $time  |  Dist: $dist km  |  Ritmo: $pace/km';
+  }
+
+  @override
+  String get developedBy => 'Desenvolvido por';
+
+  @override
+  String get contactMe => 'Entrar em Contato';
+
+  @override
+  String get githubProfile => 'Perfil no GitHub';
+
+  @override
+  String get visitPortfolio => 'Visite meu Portfólio';
 }

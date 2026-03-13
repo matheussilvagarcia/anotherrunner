@@ -224,11 +224,185 @@ abstract class AppLocalizations {
   /// **'Permission denied to access Health data.'**
   String get hcPermissionDenied;
 
+  /// No description provided for @capturedByHealthConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Captured by Health Connect'**
+  String get capturedByHealthConnect;
+
+  /// No description provided for @activityAverages.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity Averages'**
+  String get activityAverages;
+
+  /// No description provided for @last7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 Days'**
+  String get last7Days;
+
+  /// No description provided for @monthlyAverages.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Averages'**
+  String get monthlyAverages;
+
+  /// No description provided for @chartSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps'**
+  String get chartSteps;
+
+  /// No description provided for @chartCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories (kcal)'**
+  String get chartCalories;
+
+  /// No description provided for @chartDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance (km)'**
+  String get chartDistance;
+
+  /// No description provided for @chartDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration (min)'**
+  String get chartDuration;
+
   /// No description provided for @locationPermissionRequired.
   ///
   /// In en, this message translates to:
   /// **'Location permission is required to track your run.'**
   String get locationPermissionRequired;
+
+  /// No description provided for @runHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Run History'**
+  String get runHistory;
+
+  /// No description provided for @authenticationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication required'**
+  String get authenticationRequired;
+
+  /// No description provided for @noRunsRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'No runs recorded yet.'**
+  String get noRunsRecorded;
+
+  /// No description provided for @shareRunMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Check out my run on AnotherRunner on {date}!'**
+  String shareRunMessage(String date);
+
+  /// No description provided for @dailyActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Activity'**
+  String get dailyActivity;
+
+  /// No description provided for @noDailyRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'No daily records yet.'**
+  String get noDailyRecords;
+
+  /// No description provided for @unknownDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknownDate;
+
+  /// No description provided for @currentRun.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Run'**
+  String get currentRun;
+
+  /// No description provided for @timeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TIME'**
+  String get timeLabel;
+
+  /// No description provided for @paceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'PACE'**
+  String get paceLabel;
+
+  /// No description provided for @distanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'DISTANCE'**
+  String get distanceLabel;
+
+  /// No description provided for @caloriesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CALORIES'**
+  String get caloriesLabel;
+
+  /// No description provided for @runningTracker.
+  ///
+  /// In en, this message translates to:
+  /// **'Running Tracker'**
+  String get runningTracker;
+
+  /// No description provided for @activeRunMetrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Active run metrics'**
+  String get activeRunMetrics;
+
+  /// No description provided for @runInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Run in progress'**
+  String get runInProgress;
+
+  /// No description provided for @starting.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting...'**
+  String get starting;
+
+  /// No description provided for @notificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Time: {time}  |  Dist: {dist} km  |  Pace: {pace}/km'**
+  String notificationBody(String time, String dist, String pace);
+
+  /// No description provided for @developedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Developed by'**
+  String get developedBy;
+
+  /// No description provided for @contactMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Me'**
+  String get contactMe;
+
+  /// No description provided for @githubProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub Profile'**
+  String get githubProfile;
+
+  /// No description provided for @visitPortfolio.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit my Portfolio'**
+  String get visitPortfolio;
 }
 
 class _AppLocalizationsDelegate
