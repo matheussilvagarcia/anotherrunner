@@ -8,8 +8,10 @@ import 'login_screen.dart';
 import 'home_screen.dart';
 import 'run_service.dart';
 import 'purchase_service.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
+final ValueNotifier<Locale?> localeNotifier = ValueNotifier(null);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +25,10 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('isDarkMode') ?? false;
   themeNotifier.value = isDark ? ThemeMode.dark : ThemeMode.light;
+  final savedLanguage = prefs.getString('languageCode');
+  if (savedLanguage != null) {
+    localeNotifier.value = Locale(savedLanguage);
+  }
 
   runApp(const AnotherRunnerApp());
 }
@@ -35,39 +41,47 @@ class AnotherRunnerApp extends StatelessWidget {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: themeNotifier,
       builder: (_, ThemeMode currentMode, __) {
-        return MaterialApp(
-          title: 'YARA',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.blue,
-              brightness: Brightness.light,
-            ),
-            useMaterial3: true,
-          ),
-          darkTheme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.blue,
-              brightness: Brightness.dark,
-            ),
-            useMaterial3: true,
-          ),
-          themeMode: currentMode,
-          home: StreamBuilder(
-            stream: AuthService().authStateChanges,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-              if (snapshot.hasData) {
-                return const HomeScreen();
-              }
-              return const LoginScreen();
-            },
-          ),
+        return ValueListenableBuilder<Locale?>(
+          valueListenable: localeNotifier,
+          builder: (_, Locale? currentLocale, __) {
+            return MaterialApp(
+              title: 'YARA',
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: currentLocale,
+              theme: ThemeData(
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: Colors.blue,
+                  brightness: Brightness.light,
+                ),
+                useMaterial3: true,
+              ),
+              darkTheme: ThemeData(
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: Colors.blue,
+                  brightness: Brightness.dark,
+                ),
+                useMaterial3: true,
+              ),
+              themeMode: currentMode,
+              home: StreamBuilder(
+                stream: AuthService().authStateChanges,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Scaffold(
+                      body: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                  if (snapshot.hasData) {
+                    return const HomeScreen();
+                  }
+                  return const LoginScreen();
+                },
+              ),
+            );
+          },
         );
       },
     );
