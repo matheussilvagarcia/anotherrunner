@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -6,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:health/health.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'auth_service.dart';
 import 'run_screen.dart';
 import 'history_screen.dart';
@@ -71,18 +73,39 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _initPedometer() async {
-    if (await Permission.activityRecognition.request().isGranted) {
-      final prefs = await SharedPreferences.getInstance();
-      _savedStepsCount = prefs.getInt('savedStepsCount') ?? 0;
-      _lastSavedDate = prefs.getString('lastSavedDate') ?? '';
-      _stepsToday = prefs.getInt('lastKnownStepsToday') ?? 0;
+    final prefs = await SharedPreferences.getInstance();
+    _savedStepsCount = prefs.getInt('savedStepsCount') ?? 0;
+    _lastSavedDate = prefs.getString('lastSavedDate') ?? '';
+    _stepsToday = prefs.getInt('lastKnownStepsToday') ?? 0;
 
+    _realRunningTimeMin = prefs.getDouble('realRunningTimeMin') ?? 0.0;
+    _realRunningCalories = prefs.getDouble('realRunningCalories') ?? 0.0;
+    _usingHealthData = prefs.getBool('usingHealthData') ?? false;
+
+    final currentDate = DateTime.now().toString().substring(0, 10);
+    if (_lastSavedDate.isNotEmpty && _lastSavedDate != currentDate) {
+      _usingHealthData = false;
+      _realRunningTimeMin = 0.0;
+      _realRunningCalories = 0.0;
+      _stepsToday = 0;
+      await prefs.setBool('usingHealthData', false);
+      await prefs.setDouble('realRunningTimeMin', 0.0);
+      await prefs.setDouble('realRunningCalories', 0.0);
+      await prefs.setInt('lastKnownStepsToday', 0);
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+
+    if (await Permission.activityRecognition.request().isGranted) {
       _stepCountStream = Pedometer.stepCountStream;
       _stepCountStream.listen(_onStepCount).onError(_onStepCountError);
     }
   }
 
   Future<void> _syncWithHealthConnect() async {
+    final l10n = AppLocalizations.of(context)!;
     final types = [
       HealthDataType.STEPS,
       HealthDataType.ACTIVE_ENERGY_BURNED,
@@ -145,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         if (steps != null && steps > 0) {
           setState(() {
-            _stepsToday = steps;
+            _stepsToday = max(_stepsToday, steps);
             _realRunningTimeMin = tempRunningTime;
             _realRunningCalories = tempRunningCalories;
             _usingHealthData = true;
@@ -153,23 +176,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
           final prefs = await SharedPreferences.getInstance();
           await prefs.setInt('lastKnownStepsToday', _stepsToday);
+          await prefs.setDouble('realRunningTimeMin', _realRunningTimeMin);
+          await prefs.setDouble('realRunningCalories', _realRunningCalories);
+          await prefs.setBool('usingHealthData', _usingHealthData);
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Data synced! Runs added to history.')),
+              SnackBar(content: Text(l10n.hcSyncSuccess)),
             );
           }
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('No health data found for today.')),
+              SnackBar(content: Text(l10n.hcNoData)),
             );
           }
         }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Permission denied to access Health data.')),
+            SnackBar(content: Text(l10n.hcPermissionDenied)),
           );
         }
       }
@@ -263,10 +289,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _manualSync() async {
+    final l10n = AppLocalizations.of(context)!;
     await _syncToCloud();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Data synced to cloud successfully!')),
+        SnackBar(content: Text(l10n.syncSuccess)),
       );
     }
   }
@@ -296,6 +323,9 @@ class _HomeScreenState extends State<HomeScreen> {
       await prefs.setInt('savedStepsCount', _savedStepsCount);
       await prefs.setString('lastSavedDate', _lastSavedDate);
       await prefs.setInt('lastKnownStepsToday', 0);
+      await prefs.setBool('usingHealthData', false);
+      await prefs.setDouble('realRunningTimeMin', 0.0);
+      await prefs.setDouble('realRunningCalories', 0.0);
     }
 
     if (mounted && !_usingHealthData) {
@@ -314,18 +344,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  String _getGreeting() {
+  String _getGreeting(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hour = DateTime.now().hour;
     if (hour < 12) {
-      return 'Good morning';
+      return l10n.goodMorning;
     } else if (hour < 18) {
-      return 'Good afternoon';
+      return l10n.goodAfternoon;
     } else {
-      return 'Good evening';
+      return l10n.goodEvening;
     }
   }
 
   Future<void> _startRun() async {
+    final l10n = AppLocalizations.of(context)!;
     final status = await Permission.location.request();
     if (status.isGranted) {
       if (!mounted) return;
@@ -336,12 +368,13 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Location permission is required to track your run.')),
+        SnackBar(content: Text(l10n.locationPermissionRequired)),
       );
     }
   }
 
   void _showPremiumDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) {
@@ -366,16 +399,16 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 const Icon(Icons.workspace_premium, color: Colors.amber, size: 72),
                 const SizedBox(height: 16),
-                const Text(
-                  'Unlock Premium Charts',
+                Text(
+                  l10n.unlockPremium,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Get access to detailed weekly and monthly averages. Track your progress in calories, steps, distance, and running time visually and reach your goals faster!',
+                Text(
+                  l10n.premiumDesc,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 15, height: 1.4),
+                  style: const TextStyle(fontSize: 15, height: 1.4),
                 ),
                 const SizedBox(height: 28),
                 SizedBox(
@@ -396,8 +429,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     child: Text(
                       PurchaseService().products.isNotEmpty
-                          ? 'Comprar por ${PurchaseService().products.first.price}'
-                          : 'Comprar Agora',
+                          ? '${l10n.buyFor} ${PurchaseService().products.first.price}'
+                          : l10n.buyNow,
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -405,9 +438,48 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Talvez mais tarde', style: TextStyle(color: Colors.grey)),
+                  child: Text(l10n.maybeLater, style: const TextStyle(color: Colors.grey)),
                 )
               ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+  void _showLanguageDialog() {
+    final l10n = AppLocalizations.of(context)!;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(l10n.language),
+          content: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              isExpanded: true,
+              value: localeNotifier.value?.languageCode ?? 'en',
+              items: const [
+                DropdownMenuItem(
+                  value: 'en',
+                  child: Text('English (US)'),
+                ),
+                DropdownMenuItem(
+                  value: 'pt',
+                  child: Text('Português (Brasil)'),
+                ),
+              ],
+              onChanged: (String? newValue) async {
+                if (newValue != null) {
+                  localeNotifier.value = Locale(newValue);
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setString('languageCode', newValue);
+
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
+                }
+              },
             ),
           ),
         );
@@ -417,6 +489,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final String distance = (_stepsToday * 0.000762).toStringAsFixed(2);
 
     final String displayCalories = _usingHealthData && _realRunningCalories > 0
@@ -429,64 +502,95 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.bar_chart, color: Colors.amberAccent, size: 28),
-            onPressed: () {
-              if (PurchaseService().isPremiumUser) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ChartScreen()),
-                );
-              } else {
-                _showPremiumDialog();
-              }
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.calendar_month),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const DailyHistoryScreen()),
-              );
-            },
-          ),
-          IconButton(
-            icon: _isSyncing
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.cloud_upload),
-            onPressed: _isSyncing ? null : _manualSync,
-          ),
-          IconButton(
-            icon: const Icon(Icons.history),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const HistoryScreen()),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(
-              Theme.of(context).brightness == Brightness.light
-                  ? Icons.dark_mode
-                  : Icons.light_mode,
-            ),
-            onPressed: () async {
-              final isDark = themeNotifier.value == ThemeMode.light;
-              themeNotifier.value = isDark ? ThemeMode.dark : ThemeMode.light;
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        title: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.bar_chart, color: Colors.amberAccent, size: 28),
+                onPressed: () {
+                  if (PurchaseService().isPremiumUser) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ChartScreen()),
+                    );
+                  } else {
+                    _showPremiumDialog();
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.calendar_month),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DailyHistoryScreen()),
+                  );
+                },
+              ),
+              IconButton(
+                icon: _isSyncing
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.cloud_upload),
+                onPressed: _isSyncing ? null : _manualSync,
+              ),
+              IconButton(
+                icon: const Icon(Icons.history),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HistoryScreen()),
+                  );
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Theme.of(context).brightness == Brightness.light
+                      ? Icons.dark_mode
+                      : Icons.light_mode,
+                ),
+                onPressed: () async {
+                  final isDark = themeNotifier.value == ThemeMode.light;
+                  themeNotifier.value = isDark ? ThemeMode.dark : ThemeMode.light;
 
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setBool('isDarkMode', isDark);
-            },
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool('isDarkMode', isDark);
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.logout),
+                onPressed: () => AuthService().signOut(),
+              ),
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (String value) {
+                  if (value == 'privacy') {
+                  } else if (value == 'credits') {
+                  } else if (value == 'language') {
+                    _showLanguageDialog();
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: 'privacy',
+                    child: Text(l10n.privacyPolicy),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'credits',
+                    child: Text(l10n.credits),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'language',
+                    child: Text(l10n.language),
+                  ),
+                ],
+              ),
+            ],
           ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => AuthService().signOut(),
-          ),
-        ],
+        ),
       ),
       body: Center(
         child: Padding(
@@ -495,7 +599,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '${_getGreeting()}, today you took:',
+                '${_getGreeting(context)}, ${l10n.todayYouTook}',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
@@ -510,9 +614,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontWeight: FontWeight.w300,
                 ),
               ),
-              const Text(
-                'STEPS',
-                style: TextStyle(
+              Text(
+                l10n.steps,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2.0,
@@ -534,9 +638,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ElevatedButton.icon(
                   onPressed: _startRun,
                   icon: const Icon(Icons.play_arrow, size: 28),
-                  label: const Text(
-                    'Start Run',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  label: Text(
+                    l10n.startRun,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -556,9 +660,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 18,
                     height: 18,
                   ),
-                  label: const Text(
-                    'Sync Health Connect',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  label: Text(
+                    l10n.syncHealthConnect,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -569,7 +673,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Last cloud sync on $_lastSyncText',
+                '${l10n.lastSyncOn} $_lastSyncText',
                 style: const TextStyle(
                   fontSize: 12,
                   color: Colors.grey,

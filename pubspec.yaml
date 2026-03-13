@@ -10,6 +10,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # TRADUÇÕES (Movi para dentro de dependencies)
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
   cupertino_icons: ^1.0.8
   firebase_core: ^4.5.0
   firebase_auth: ^6.2.0
@@ -40,9 +45,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
   assets:
     - .env
     - lib/assets/
+
 flutter_launcher_icons:
   android: true
   ios: true
