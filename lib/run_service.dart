@@ -31,8 +31,8 @@ Future<void> initializeService() async {
       autoStart: false,
       isForegroundMode: true,
       notificationChannelId: 'running_channel_id',
-      initialNotificationTitle: 'Run in progress',
-      initialNotificationContent: 'Starting...',
+      initialNotificationTitle: 'Corrida em andamento',
+      initialNotificationContent: 'Iniciando...',
       foregroundServiceNotificationId: 1,
     ),
     iosConfiguration: IosConfiguration(
@@ -52,13 +52,29 @@ Future<bool> onIosBackground(ServiceInstance service) async {
 void onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
 
-  int secondsElapsed = 0;
-  double distanceKm = 0.0;
+  final prefs = await SharedPreferences.getInstance();
+  final isRunActive = prefs.getBool('isRunActive') ?? false;
+
+  if (!isRunActive) {
+    service.stopSelf();
+    return;
+  }
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+
+  const AndroidInitializationSettings initializationSettingsAndroid =
+  AndroidInitializationSettings('ic_notification');
+
+  const InitializationSettings initializationSettings =
+  InitializationSettings(android: initializationSettingsAndroid);
+
+  await flutterLocalNotificationsPlugin.initialize(settings: initializationSettings);
+
+  int secondsElapsed = prefs.getInt('runSeconds') ?? 0;
+  double distanceKm = prefs.getDouble('runDistance') ?? 0.0;
   List<Map<String, double>> route = [];
 
-  final prefs = await SharedPreferences.getInstance();
-  secondsElapsed = prefs.getInt('runSeconds') ?? 0;
-  distanceKm = prefs.getDouble('runDistance') ?? 0.0;
   final routeString = prefs.getString('runRoute');
   if (routeString != null) {
     final List decoded = jsonDecode(routeString);
@@ -87,9 +103,6 @@ void onStart(ServiceInstance service) async {
     );
   }
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
-
   final positionStream = Geolocator.getPositionStream(locationSettings: locationSettings)
       .listen((Position position) {
     final newPoint = {'lat': position.latitude, 'lng': position.longitude};
@@ -112,6 +125,7 @@ void onStart(ServiceInstance service) async {
       'distance': distanceKm,
       'lat': position.latitude,
       'lng': position.longitude,
+      'isRunActive': true,
     });
   });
 
@@ -136,8 +150,8 @@ void onStart(ServiceInstance service) async {
       if (await service.isForegroundService()) {
         flutterLocalNotificationsPlugin.show(
           id: 1,
-          title: 'Run in progress',
-          body: 'Time: $timeStr  |  Dist: ${distanceKm.toStringAsFixed(2)} km  |  Pace: $paceStr/km',
+          title: 'Corrida em andamento',
+          body: 'Tempo: $timeStr | Dist: ${distanceKm.toStringAsFixed(2)} km | Ritmo: $paceStr/km',
           notificationDetails: const NotificationDetails(
             android: AndroidNotificationDetails(
               'running_channel_id',
@@ -155,12 +169,14 @@ void onStart(ServiceInstance service) async {
     service.invoke('update', {
       'seconds': secondsElapsed,
       'distance': distanceKm,
+      'isRunActive': true,
     });
   });
 
   service.on('stopService').listen((event) {
     timer.cancel();
     positionStream.cancel();
+    service.invoke('update', {'isRunActive': false});
     service.stopSelf();
   });
 }

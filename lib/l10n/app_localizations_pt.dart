@@ -168,4 +168,85 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get visitPortfolio => 'Visite meu Portfólio';
+
+  @override
+  String get fillAllFields => 'Por favor, preencha todos os campos';
+
+  @override
+  String get passwordsNotMatch => 'As senhas não coincidem!';
+
+  @override
+  String get passwordTooShort => 'A senha deve ter pelo menos 6 caracteres';
+
+  @override
+  String get errorSendingOtp => 'Erro ao enviar código de verificação.';
+
+  @override
+  String get confirmEmailTitle => 'Confirme seu E-mail';
+
+  @override
+  String otpSentMessage(String email) {
+    return 'Enviamos um código de 6 dígitos para $email.';
+  }
+
+  @override
+  String get otpCodeLabel => 'Código OTP';
+
+  @override
+  String get cancelBtn => 'Cancelar';
+
+  @override
+  String get confirmBtn => 'Confirmar';
+
+  @override
+  String get invalidOtp => 'Código inválido.';
+
+  @override
+  String get welcomeTo => 'Bem vindo ao:';
+
+  @override
+  String get chooseLoginMethod => 'Escolha sua forma de login';
+
+  @override
+  String get emailLabel => 'E-mail';
+
+  @override
+  String get passwordLabel => 'Senha';
+
+  @override
+  String get confirmPasswordLabel => 'Confirmar Senha';
+
+  @override
+  String get createAccountBtn => 'Criar Conta';
+
+  @override
+  String get signInBtn => 'Entrar';
+
+  @override
+  String get alreadyHaveAccount => 'Já tem uma conta? Entrar';
+
+  @override
+  String get dontHaveAccount => 'Não tem uma conta? Criar Conta';
+
+  @override
+  String get signInWithGoogleBtn => 'Entrar com o Google';
+
+  @override
+  String get emailInUseGoogle =>
+      'Este e-mail está vinculado ao Google. Faça login com o Google.';
+
+  @override
+  String get emailInUsePassword =>
+      'E-mail já cadastrado. Faça login ou redefina sua senha.';
+
+  @override
+  String get forgotPasswordBtn => 'Esqueci a senha';
+
+  @override
+  String get fillEmailToReset =>
+      'Preencha o campo de e-mail para redefinir a senha.';
+
+  @override
+  String get passwordResetSent =>
+      'Link de redefinição enviado para o seu e-mail!';
 }

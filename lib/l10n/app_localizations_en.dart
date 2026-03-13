@@ -166,4 +166,83 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get visitPortfolio => 'Visit my Portfolio';
+
+  @override
+  String get fillAllFields => 'Please fill all fields';
+
+  @override
+  String get passwordsNotMatch => 'Passwords do not match!';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 6 characters';
+
+  @override
+  String get errorSendingOtp => 'Error sending verification code to email.';
+
+  @override
+  String get confirmEmailTitle => 'Confirm your Email';
+
+  @override
+  String otpSentMessage(String email) {
+    return 'We sent a 6-digit code to $email.';
+  }
+
+  @override
+  String get otpCodeLabel => 'OTP Code';
+
+  @override
+  String get cancelBtn => 'Cancel';
+
+  @override
+  String get confirmBtn => 'Confirm';
+
+  @override
+  String get invalidOtp => 'Invalid Code.';
+
+  @override
+  String get welcomeTo => 'Welcome to:';
+
+  @override
+  String get chooseLoginMethod => 'Choose your login method';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get passwordLabel => 'Password';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm Password';
+
+  @override
+  String get createAccountBtn => 'Create Account';
+
+  @override
+  String get signInBtn => 'Sign In';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account? Sign In';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account? Create Account';
+
+  @override
+  String get signInWithGoogleBtn => 'Sign in with Google';
+
+  @override
+  String get emailInUseGoogle =>
+      'This email is registered with Google. Please Sign in with Google.';
+
+  @override
+  String get emailInUsePassword =>
+      'Email already in use. Please sign in or reset your password.';
+
+  @override
+  String get forgotPasswordBtn => 'Forgot Password?';
+
+  @override
+  String get fillEmailToReset => 'Enter your email to reset the password.';
+
+  @override
+  String get passwordResetSent => 'Password reset link sent to your email!';
 }

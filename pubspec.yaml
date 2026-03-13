@@ -38,6 +38,7 @@ dependencies:
   flutter_svg: ^2.2.4
   in_app_purchase: ^3.2.3
   url_launcher: ^6.3.2
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:
