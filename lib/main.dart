@@ -8,8 +8,8 @@ import 'login_screen.dart';
 import 'home_screen.dart';
 import 'run_service.dart';
 import 'purchase_service.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:anotherrunner/l10n/app_localizations.dart';
+
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 final ValueNotifier<Locale?> localeNotifier = ValueNotifier(null);
 

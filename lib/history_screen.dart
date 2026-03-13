@@ -7,6 +7,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:anotherrunner/l10n/app_localizations.dart'; // Importação das traduções
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -56,13 +57,14 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!; // Acesso às traduções
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Run History'),
+        title: Text(l10n.runHistory),
       ),
       body: user == null
-          ? const Center(child: Text('Authentication required'))
+          ? Center(child: Text(l10n.authenticationRequired))
           : StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
@@ -76,10 +78,10 @@ class HistoryScreen extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
-                'No runs recorded yet.',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                l10n.noRunsRecorded,
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
             );
           }
@@ -163,7 +165,10 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
     return '$minutes:${seconds.toString().padLeft(2, '0')}';
   }
 
-  Future<void> _shareRunCard() async {
+  Future<void> _shareRunCard(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!; // Pega a tradução antes de qualquer interrupção assíncrona
+    final shareText = l10n.shareRunMessage(widget.formattedDate);
+
     setState(() {
       _isSharing = true;
     });
@@ -181,7 +186,7 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
         final XFile xFile = XFile(imagePath.path);
         await Share.shareXFiles(
           [xFile],
-          text: 'Check out my run on AnotherRunner on ${widget.formattedDate}!',
+          text: shareText, // Utiliza a tradução com a data injetada
         );
       }
     } catch (e) {
@@ -197,6 +202,8 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Screenshot(
       controller: _screenshotController,
       child: Card(
@@ -231,7 +238,7 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
                   else
                     IconButton(
                       icon: const Icon(Icons.share, size: 20, color: Colors.blue),
-                      onPressed: _shareRunCard,
+                      onPressed: () => _shareRunCard(context),
                     ),
                 ],
               ),
@@ -239,12 +246,12 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Row(
-                    children: const [
-                      Icon(Icons.health_and_safety, size: 16, color: Colors.green),
-                      SizedBox(width: 4),
+                    children: [
+                      const Icon(Icons.health_and_safety, size: 16, color: Colors.green),
+                      const SizedBox(width: 4),
                       Text(
-                        'Captured by Health Connect',
-                        style: TextStyle(
+                        l10n.capturedByHealthConnect,
+                        style: const TextStyle(
                           fontSize: 12,
                           color: Colors.green,
                           fontWeight: FontWeight.w600,

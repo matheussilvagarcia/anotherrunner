@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:anotherrunner/l10n/app_localizations.dart'; // Importação das traduções
 
 class ChartScreen extends StatefulWidget {
   const ChartScreen({super.key});
@@ -123,9 +124,11 @@ class _ChartScreenState extends State<ChartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; // Inicializando o tradutor
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Activity Averages'),
+        title: Text(l10n.activityAverages), // Traduzido
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -134,9 +137,9 @@ class _ChartScreenState extends State<ChartScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SegmentedButton<bool>(
-              segments: const [
-                ButtonSegment(value: true, label: Text('Last 7 Days')),
-                ButtonSegment(value: false, label: Text('Monthly Averages')),
+              segments: [
+                ButtonSegment(value: true, label: Text(l10n.last7Days)), // Traduzido
+                ButtonSegment(value: false, label: Text(l10n.monthlyAverages)), // Traduzido
               ],
               selected: {_isWeekly},
               onSelectionChanged: (Set<bool> newSelection) {
@@ -150,10 +153,10 @@ class _ChartScreenState extends State<ChartScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16.0),
               children: [
-                _buildChartCard('Steps', 'steps', Colors.blue),
-                _buildChartCard('Calories (kcal)', 'calories', Colors.orange),
-                _buildChartCard('Distance (km)', 'distanceKm', Colors.green),
-                _buildChartCard('Duration (min)', 'timeMin', Colors.purple),
+                _buildChartCard(l10n.chartSteps, 'steps', Colors.blue), // Traduzido
+                _buildChartCard(l10n.chartCalories, 'calories', Colors.orange), // Traduzido
+                _buildChartCard(l10n.chartDistance, 'distanceKm', Colors.green), // Traduzido
+                _buildChartCard(l10n.chartDuration, 'timeMin', Colors.purple), // Traduzido
               ],
             ),
           ),

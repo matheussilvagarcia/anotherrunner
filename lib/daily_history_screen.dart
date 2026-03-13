@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:anotherrunner/l10n/app_localizations.dart'; // Importação das traduções
 
 class DailyHistoryScreen extends StatelessWidget {
   const DailyHistoryScreen({super.key});
@@ -12,6 +13,7 @@ class DailyHistoryScreen extends StatelessWidget {
         return '${parts[2]}/${parts[1]}/${parts[0]}';
       }
     } catch (e) {
+      // Ignorar e retornar o original se falhar
     }
     return dateStr;
   }
@@ -19,13 +21,14 @@ class DailyHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!; // Acesso às traduções
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Daily Activity'),
+        title: Text(l10n.dailyActivity),
       ),
       body: user == null
-          ? const Center(child: Text('Authentication required'))
+          ? Center(child: Text(l10n.authenticationRequired)) // Reutilizando a variável já existente
           : StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
@@ -39,10 +42,10 @@ class DailyHistoryScreen extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
-                'No daily records yet.',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                l10n.noDailyRecords,
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
               ),
             );
           }
@@ -55,7 +58,7 @@ class DailyHistoryScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final record = records[index].data() as Map<String, dynamic>;
 
-              final dateStr = record['date'] as String? ?? 'Unknown';
+              final dateStr = record['date'] as String? ?? l10n.unknownDate; // Substituído Unknown
               final steps = record['steps'] as int? ?? 0;
               final distance = record['distanceKm'] as double? ?? 0.0;
               final calories = record['calories'] as double? ?? 0.0;
@@ -97,11 +100,11 @@ class DailyHistoryScreen extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 6.0, left: 8.0),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 6.0, left: 8.0),
                             child: Text(
-                              'STEPS',
-                              style: TextStyle(
+                              l10n.steps, // Reutilizando a chave "STEPS" original do seu app_en.arb
+                              style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.grey,

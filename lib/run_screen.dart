@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:anotherrunner/l10n/app_localizations.dart';
 
 class RunScreen extends StatefulWidget {
   const RunScreen({super.key});
@@ -212,9 +213,11 @@ class _RunScreenState extends State<RunScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Current Run'),
+        title: Text(l10n.currentRun),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.pop(context),
@@ -255,16 +258,16 @@ class _RunScreenState extends State<RunScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildRunMetric('TIME', _formatTime(_secondsElapsed)),
-                    _buildRunMetric('PACE', '${_formatPace(_pace)} /km'),
+                    _buildRunMetric(l10n.timeLabel, _formatTime(_secondsElapsed)),
+                    _buildRunMetric(l10n.paceLabel, '${_formatPace(_pace)} /km'),
                   ],
                 ),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildRunMetric('DISTANCE', '${_distanceKm.toStringAsFixed(2)} km'),
-                    _buildRunMetric('CALORIES', '${(_distanceKm * 70).toStringAsFixed(0)} kcal'),
+                    _buildRunMetric(l10n.distanceLabel, '${_distanceKm.toStringAsFixed(2)} km'),
+                    _buildRunMetric(l10n.caloriesLabel, '${(_distanceKm * 70).toStringAsFixed(0)} kcal'),
                   ],
                 ),
                 const SizedBox(height: 24),
