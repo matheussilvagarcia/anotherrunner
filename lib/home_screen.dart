@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
@@ -7,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:health/health.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:anotherrunner/l10n/app_localizations.dart';
 import 'auth_service.dart';
 import 'package:anotherrunner/run_screen.dart';
@@ -37,26 +40,57 @@ class _HomeScreenState extends State<HomeScreen> {
   double _realRunningCalories = 0.0;
   bool _usingHealthData = false;
 
+  bool _isRunActive = false;
+  int _runSeconds = 0;
+  double _runDistance = 0.0;
+  StreamSubscription<Map<String, dynamic>?>? _serviceSubscription;
+
   @override
   void initState() {
     super.initState();
     _initPedometer();
     _loadLastSyncAndAutoSync();
     _checkForActiveRun();
+    _listenToService();
+  }
+
+  @override
+  void dispose() {
+    _serviceSubscription?.cancel();
+    super.dispose();
+  }
+
+  void _listenToService() {
+    _serviceSubscription = FlutterBackgroundService().on('update').listen((event) {
+      if (event == null || !mounted) return;
+
+      setState(() {
+        if (event.containsKey('isRunActive') && event['isRunActive'] == false) {
+          _isRunActive = false; // Força o botão a desligar imediatamente
+        } else {
+          if (event.containsKey('seconds')) {
+            _runSeconds = (event['seconds'] as num).toInt();
+            _isRunActive = true;
+          }
+          if (event.containsKey('distance')) {
+            _runDistance = (event['distance'] as num).toDouble();
+          }
+        }
+      });
+    });
   }
 
   Future<void> _checkForActiveRun() async {
     final prefs = await SharedPreferences.getInstance();
     final isRunActive = prefs.getBool('isRunActive') ?? false;
 
-    if (isRunActive) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => RunScreen()), // Sem o const!
-        );
-      });
-    }
+    setState(() {
+      _isRunActive = isRunActive;
+      if (_isRunActive) {
+        _runSeconds = prefs.getInt('runSeconds') ?? 0;
+        _runDistance = prefs.getDouble('runDistance') ?? 0.0;
+      }
+    });
   }
 
   Future<void> _loadLastSyncAndAutoSync() async {
@@ -359,18 +393,35 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _startRun() async {
     final l10n = AppLocalizations.of(context)!;
-    final status = await Permission.location.request();
-    if (status.isGranted) {
-      if (!mounted) return;
-      Navigator.push(
+
+    if (_isRunActive) {
+      await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => RunScreen()), // Sem o const!
+        MaterialPageRoute(builder: (context) => const RunScreen()),
       );
+      _checkForActiveRun();
     } else {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.locationPermissionRequired)),
-      );
+      final status = await Permission.location.request();
+      if (status.isGranted) {
+        if (!mounted) return;
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const RunScreen()),
+        );
+        _checkForActiveRun();
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.locationPermissionRequired)),
+        );
+      }
+    }
+  }
+
+  Future<void> _launchPrivacyPolicy() async {
+    final Uri url = Uri.parse('https://matheussilvagarcia.com/projects/yara/privacypolicy/');
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      debugPrint('Não foi possível abrir o link da política de privacidade.');
     }
   }
 
@@ -502,6 +553,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ? _realRunningTimeMin.toStringAsFixed(0)
         : (_stepsToday / 100).toStringAsFixed(0);
 
+    final double activeRunCalories = _runDistance * 70.0;
+    final int runMinutes = _runSeconds ~/ 60;
+    final int runRemainingSeconds = _runSeconds % 60;
+    final String activeRunTimeStr = '${runMinutes.toString().padLeft(2, '0')}:${runRemainingSeconds.toString().padLeft(2, '0')}';
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -568,30 +624,52 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),
-        onSelected: (String value) {
-          if (value == 'privacy') {
-            // Opcional no futuro
-          } else if (value == 'credits') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const CreditsScreen()),
-            );
-          } else if (value == 'language') {
-            _showLanguageDialog();
-          }
-        },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 4,
+                onSelected: (String value) {
+                  if (value == 'privacy') {
+                    _launchPrivacyPolicy();
+                  } else if (value == 'credits') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CreditsScreen()),
+                    );
+                  } else if (value == 'language') {
+                    _showLanguageDialog();
+                  }
+                },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   PopupMenuItem<String>(
                     value: 'privacy',
-                    child: Text(l10n.privacyPolicy),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.privacy_tip, size: 20),
+                        const SizedBox(width: 12),
+                        Text(l10n.privacyPolicy),
+                      ],
+                    ),
                   ),
                   PopupMenuItem<String>(
                     value: 'credits',
-                    child: Text(l10n.credits),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info_outline, size: 20),
+                        const SizedBox(width: 12),
+                        Text(l10n.credits),
+                      ],
+                    ),
                   ),
                   PopupMenuItem<String>(
                     value: 'language',
-                    child: Text(l10n.language),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.language, size: 20),
+                        const SizedBox(width: 12),
+                        Text(l10n.language),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -599,95 +677,131 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '${_getGreeting(context)}, ${l10n.todayYouTook}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                '$_stepsToday',
-                style: const TextStyle(
-                  fontSize: 80,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-              Text(
-                l10n.steps,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2.0,
-                ),
-              ),
-              const SizedBox(height: 64),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildMetricItem(Icons.local_fire_department, displayCalories, 'kcal'),
-                  _buildMetricItem(Icons.location_on, distance, 'km'),
-                  _buildMetricItem(Icons.timer, displayTime, 'min'),
-                ],
-              ),
-              const SizedBox(height: 64),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton.icon(
-                  onPressed: _startRun,
-                  icon: const Icon(Icons.play_arrow, size: 28),
-                  label: Text(
-                    l10n.startRun,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      // AQUI ESTÁ A CORREÇÃO: SafeArea + LayoutBuilder + SingleChildScrollView
+      // garante centralização perfeita em telas grandes e barra de rolagem inteligente em telas pequenas.
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${_getGreeting(context)}, ${l10n.todayYouTook}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        '$_stepsToday',
+                        style: const TextStyle(
+                          fontSize: 80,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                      Text(
+                        l10n.steps,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2.0,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildMetricItem(Icons.local_fire_department, displayCalories, 'kcal'),
+                          _buildMetricItem(Icons.location_on, distance, 'km'),
+                          _buildMetricItem(Icons.timer, displayTime, 'min'),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 64,
+                        child: ElevatedButton(
+                          onPressed: _startRun,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _isRunActive
+                                ? Colors.red.shade600
+                                : Theme.of(context).colorScheme.primary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: _isRunActive
+                              ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Corrida em andamento',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '$activeRunTimeStr  •  ${_runDistance.toStringAsFixed(2)} km  •  ${activeRunCalories.toStringAsFixed(0)} kcal',
+                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          )
+                              : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.play_arrow, size: 28),
+                              const SizedBox(width: 8),
+                              Text(
+                                l10n.startRun,
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 28,
+                        child: OutlinedButton.icon(
+                          onPressed: _syncWithHealthConnect,
+                          icon: SvgPicture.asset(
+                            'lib/assets/HealthConnect.svg',
+                            width: 18,
+                            height: 18,
+                          ),
+                          label: Text(
+                            l10n.syncHealthConnect,
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        '${l10n.lastSyncOn} $_lastSyncText',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
                 ),
               ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 28,
-                child: OutlinedButton.icon(
-                  onPressed: _syncWithHealthConnect,
-                  icon: SvgPicture.asset(
-                    'lib/assets/HealthConnect.svg',
-                    width: 18,
-                    height: 18,
-                  ),
-                  label: Text(
-                    l10n.syncHealthConnect,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '${l10n.lastSyncOn} $_lastSyncText',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

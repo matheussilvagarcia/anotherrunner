@@ -403,6 +403,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Visit my Portfolio'**
   String get visitPortfolio;
+
+  /// No description provided for @fillAllFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all fields'**
+  String get fillAllFields;
+
+  /// No description provided for @passwordsNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match!'**
+  String get passwordsNotMatch;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordTooShort;
+
+  /// No description provided for @errorSendingOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Error sending verification code to email.'**
+  String get errorSendingOtp;
+
+  /// No description provided for @confirmEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your Email'**
+  String get confirmEmailTitle;
+
+  /// No description provided for @otpSentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a 6-digit code to {email}.'**
+  String otpSentMessage(String email);
+
+  /// No description provided for @otpCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP Code'**
+  String get otpCodeLabel;
+
+  /// No description provided for @cancelBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelBtn;
+
+  /// No description provided for @confirmBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirmBtn;
+
+  /// No description provided for @invalidOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Code.'**
+  String get invalidOtp;
+
+  /// No description provided for @welcomeTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to:'**
+  String get welcomeTo;
+
+  /// No description provided for @chooseLoginMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your login method'**
+  String get chooseLoginMethod;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordLabel;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @createAccountBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccountBtn;
+
+  /// No description provided for @signInBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signInBtn;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign In'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @dontHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account? Create Account'**
+  String get dontHaveAccount;
+
+  /// No description provided for @signInWithGoogleBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get signInWithGoogleBtn;
+
+  /// No description provided for @emailInUseGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is registered with Google. Please Sign in with Google.'**
+  String get emailInUseGoogle;
+
+  /// No description provided for @emailInUsePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Email already in use. Please sign in or reset your password.'**
+  String get emailInUsePassword;
+
+  /// No description provided for @forgotPasswordBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get forgotPasswordBtn;
+
+  /// No description provided for @fillEmailToReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email to reset the password.'**
+  String get fillEmailToReset;
+
+  /// No description provided for @passwordResetSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset link sent to your email!'**
+  String get passwordResetSent;
 }
 
 class _AppLocalizationsDelegate

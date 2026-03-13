@@ -21,6 +21,7 @@ class RunScreen extends StatefulWidget {
 class _RunScreenState extends State<RunScreen> {
   final Completer<GoogleMapController> _controller = Completer();
   StreamSubscription<Map<String, dynamic>?>? _serviceSubscription;
+  Timer? _localTimer;
 
   List<LatLng> _route = [];
   Set<Polyline> _polylines = {};
@@ -48,16 +49,22 @@ class _RunScreenState extends State<RunScreen> {
 
       setState(() {
         if (event.containsKey('seconds')) {
-          _secondsElapsed = event['seconds'];
+          int bgSeconds = (event['seconds'] as num).toInt();
+          if ((_secondsElapsed - bgSeconds).abs() > 2) {
+            _secondsElapsed = bgSeconds;
+          }
         }
         if (event.containsKey('distance')) {
-          _distanceKm = event['distance'];
-          if (_distanceKm > 0) {
+          _distanceKm = (event['distance'] as num).toDouble();
+          if (_distanceKm > 0 && _secondsElapsed > 0) {
             _pace = (_secondsElapsed / 60) / _distanceKm;
           }
         }
         if (event.containsKey('lat') && event.containsKey('lng')) {
-          final newLatLng = LatLng(event['lat'], event['lng']);
+          final newLatLng = LatLng(
+              (event['lat'] as num).toDouble(),
+              (event['lng'] as num).toDouble()
+          );
           _route.add(newLatLng);
           _polylines.add(
             Polyline(
@@ -80,14 +87,14 @@ class _RunScreenState extends State<RunScreen> {
     setState(() {
       _secondsElapsed = prefs.getInt('runSeconds') ?? 0;
       _distanceKm = prefs.getDouble('runDistance') ?? 0.0;
-      if (_distanceKm > 0) {
+      if (_distanceKm > 0 && _secondsElapsed > 0) {
         _pace = (_secondsElapsed / 60) / _distanceKm;
       }
 
       final routeString = prefs.getString('runRoute');
       if (routeString != null) {
         final List decoded = jsonDecode(routeString);
-        _route = decoded.map((p) => LatLng(p['lat'], p['lng'])).toList();
+        _route = decoded.map((p) => LatLng((p['lat'] as num).toDouble(), (p['lng'] as num).toDouble())).toList();
         if (_route.isNotEmpty) {
           _polylines.add(
             Polyline(
@@ -102,12 +109,28 @@ class _RunScreenState extends State<RunScreen> {
     });
 
     if (isActive) {
-      setState(() {
-        _isRunning = true;
-      });
       final isRunningInBg = await FlutterBackgroundService().isRunning();
-      if (!isRunningInBg) {
-        FlutterBackgroundService().startService();
+
+      if (isRunningInBg) {
+        setState(() {
+          _isRunning = true;
+        });
+
+        _localTimer?.cancel();
+        _localTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          if (mounted) {
+            setState(() {
+              _secondsElapsed++;
+              if (_distanceKm > 0) {
+                _pace = (_secondsElapsed / 60) / _distanceKm;
+              }
+            });
+          }
+        });
+      } else {
+        setState(() {
+          _isRunning = false;
+        });
       }
     }
   }
@@ -124,10 +147,12 @@ class _RunScreenState extends State<RunScreen> {
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
-    setState(() {
-      _currentPosition = LatLng(position.latitude, position.longitude);
-      _isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _currentPosition = LatLng(position.latitude, position.longitude);
+        _isLoading = false;
+      });
+    }
   }
 
   void _toggleRun() {
@@ -147,6 +172,18 @@ class _RunScreenState extends State<RunScreen> {
       prefs.setBool('isRunActive', true);
     });
 
+    _localTimer?.cancel();
+    _localTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          _secondsElapsed++;
+          if (_distanceKm > 0) {
+            _pace = (_secondsElapsed / 60) / _distanceKm;
+          }
+        });
+      }
+    });
+
     FlutterBackgroundService().startService();
   }
 
@@ -154,6 +191,8 @@ class _RunScreenState extends State<RunScreen> {
     setState(() {
       _isRunning = false;
     });
+
+    _localTimer?.cancel();
     FlutterBackgroundService().invoke('stopService');
   }
 
@@ -207,6 +246,7 @@ class _RunScreenState extends State<RunScreen> {
 
   @override
   void dispose() {
+    _localTimer?.cancel();
     _serviceSubscription?.cancel();
     super.dispose();
   }

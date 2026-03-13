@@ -69,5 +69,37 @@
             "developedBy": "Developed by",
               "contactMe": "Contact Me",
               "githubProfile": "GitHub Profile",
-              "visitPortfolio": "Visit my Portfolio"
+              "visitPortfolio": "Visit my Portfolio",
+              "fillAllFields": "Please fill all fields",
+                "passwordsNotMatch": "Passwords do not match!",
+                "passwordTooShort": "Password must be at least 6 characters",
+                "errorSendingOtp": "Error sending verification code to email.",
+                "confirmEmailTitle": "Confirm your Email",
+                "otpSentMessage": "We sent a 6-digit code to {email}.",
+                "@otpSentMessage": {
+                  "placeholders": {
+                    "email": {
+                      "type": "String"
+                    }
+                  }
+                },
+                "otpCodeLabel": "OTP Code",
+                "cancelBtn": "Cancel",
+                "confirmBtn": "Confirm",
+                "invalidOtp": "Invalid Code.",
+                "welcomeTo": "Welcome to:",
+                "chooseLoginMethod": "Choose your login method",
+                "emailLabel": "Email",
+                "passwordLabel": "Password",
+                "confirmPasswordLabel": "Confirm Password",
+                "createAccountBtn": "Create Account",
+                "signInBtn": "Sign In",
+                "alreadyHaveAccount": "Already have an account? Sign In",
+                "dontHaveAccount": "Don't have an account? Create Account",
+                "signInWithGoogleBtn": "Sign in with Google",
+                "emailInUseGoogle": "This email is registered with Google. Please Sign in with Google.",
+                  "emailInUsePassword": "Email already in use. Please sign in or reset your password.",
+                  "forgotPasswordBtn": "Forgot Password?",
+                  "fillEmailToReset": "Enter your email to reset the password.",
+                  "passwordResetSent": "Password reset link sent to your email!"
 }
