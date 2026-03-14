@@ -7,7 +7,8 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:anotherrunner/l10n/app_localizations.dart'; // Importação das traduções
+import 'package:anotherrunner/l10n/app_localizations.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -57,7 +58,7 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final l10n = AppLocalizations.of(context)!; // Acesso às traduções
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -92,14 +93,18 @@ class HistoryScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             itemCount: runs.length,
             itemBuilder: (context, index) {
-              final run = runs[index].data() as Map<String, dynamic>;
+              final runDoc = runs[index];
+              final run = runDoc.data() as Map<String, dynamic>;
+              final String docId = runDoc.id;
 
               final timestamp = run['timestamp'] as Timestamp?;
               final date = timestamp != null ? timestamp.toDate() : DateTime.now();
-              final distance = run['distanceKm'] as double? ?? 0.0;
-              final duration = run['durationSeconds'] as int? ?? 0;
-              final pace = run['averagePace'] as double? ?? 0.0;
-              final calories = run['calories'] as double? ?? (distance * 70.0);
+
+              final distance = (run['distanceKm'] as num?)?.toDouble() ?? 0.0;
+              final duration = (run['durationSeconds'] as num?)?.toInt() ?? 0;
+              final pace = (run['averagePace'] as num?)?.toDouble() ?? 0.0;
+              final calories = (run['calories'] as num?)?.toDouble() ?? (distance * 70.0);
+
               final route = run['route'] as List<dynamic>? ?? [];
               final source = run['source'] as String? ?? 'app';
 
@@ -108,6 +113,7 @@ class HistoryScreen extends StatelessWidget {
               final mapUrl = _getStaticMapUrl(route);
 
               return RunHistoryCard(
+                docId: docId,
                 formattedDate: formattedDate,
                 formattedDistance: formattedDistance,
                 mapUrl: mapUrl,
@@ -125,6 +131,7 @@ class HistoryScreen extends StatelessWidget {
 }
 
 class RunHistoryCard extends StatefulWidget {
+  final String docId;
   final String formattedDate;
   final String formattedDistance;
   final String mapUrl;
@@ -135,6 +142,7 @@ class RunHistoryCard extends StatefulWidget {
 
   const RunHistoryCard({
     super.key,
+    required this.docId,
     required this.formattedDate,
     required this.formattedDistance,
     required this.mapUrl,
@@ -166,7 +174,7 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
   }
 
   Future<void> _shareRunCard(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!; // Pega a tradução antes de qualquer interrupção assíncrona
+    final l10n = AppLocalizations.of(context)!;
     final shareText = l10n.shareRunMessage(widget.formattedDate);
 
     setState(() {
@@ -186,7 +194,7 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
         final XFile xFile = XFile(imagePath.path);
         await Share.shareXFiles(
           [xFile],
-          text: shareText, // Utiliza a tradução com a data injetada
+          text: shareText,
         );
       }
     } catch (e) {
@@ -196,6 +204,38 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
         setState(() {
           _isSharing = false;
         });
+      }
+    }
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Excluir corrida?'),
+        content: const Text('Essa ação não poderá ser desfeita.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('runs')
+            .doc(widget.docId)
+            .delete();
       }
     }
   }
@@ -229,17 +269,25 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  if (_isSharing)
-                    const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  else
-                    IconButton(
-                      icon: const Icon(Icons.share, size: 20, color: Colors.blue),
-                      onPressed: () => _shareRunCard(context),
-                    ),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                        onPressed: () => _confirmDelete(context),
+                      ),
+                      if (_isSharing)
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      else
+                        IconButton(
+                          icon: const Icon(Icons.share, size: 20, color: Colors.blue),
+                          onPressed: () => _shareRunCard(context),
+                        ),
+                    ],
+                  ),
                 ],
               ),
               if (widget.source == 'health_connect')
@@ -247,8 +295,12 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Row(
                     children: [
-                      const Icon(Icons.health_and_safety, size: 16, color: Colors.green),
-                      const SizedBox(width: 4),
+                      SvgPicture.asset(
+                        'lib/assets/HealthConnect.svg',
+                        width: 16,
+                        height: 16,
+                      ),
+                      const SizedBox(width: 8),
                       Text(
                         l10n.capturedByHealthConnect,
                         style: const TextStyle(

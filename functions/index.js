@@ -11,6 +11,12 @@ const EMAILJS_USER_ID = process.env.EMAILJS_USER_ID;
 const EMAILJS_PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY;
 
 exports.sendOtpEmail = functions.https.onCall(async (data, context) => {
+  if (context.app === undefined) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      'A função deve ser chamada a partir de um aplicativo autêntico.'
+    );
+  }
   const payload = data.email ? data : (data.data || {});
   const email = payload.email;
   const otp = payload.otp;
