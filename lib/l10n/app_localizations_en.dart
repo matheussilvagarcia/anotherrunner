@@ -21,7 +21,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get syncHealthConnect => 'Sync Health Connect';
 
   @override
-  String get todayYouTook => 'today you took:';
+  String get todayYouTook => 'today you walked';
 
   @override
   String get goodMorning => 'Good morning';

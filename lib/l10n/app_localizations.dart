@@ -125,7 +125,7 @@ abstract class AppLocalizations {
   /// No description provided for @todayYouTook.
   ///
   /// In en, this message translates to:
-  /// **'today you took:'**
+  /// **'today you walked'**
   String get todayYouTook;
 
   /// No description provided for @goodMorning.

@@ -7,6 +7,7 @@ import 'auth_service.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
 import 'run_service.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'purchase_service.dart';
 import 'package:anotherrunner/l10n/app_localizations.dart';
 
@@ -29,6 +30,10 @@ void main() async {
   if (savedLanguage != null) {
     localeNotifier.value = Locale(savedLanguage);
   }
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: AndroidProvider.playIntegrity,
+    appleProvider: AppleProvider.deviceCheck, // ou appAttest
+  );
 
   runApp(const AnotherRunnerApp());
 }

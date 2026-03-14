@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
@@ -31,7 +32,11 @@ class _HomeScreenState extends State<HomeScreen> {
   late Stream<StepCount> _stepCountStream;
   int _stepsToday = 0;
   int _savedStepsCount = 0;
+  int _lastLocalSteps = 0;
   String _lastSavedDate = '';
+
+  Map<String, int> _localHourlyBuckets = {};
+  Map<String, int> _healthHourlyBuckets = {};
 
   String _lastSyncText = 'Never';
   bool _isSyncing = false;
@@ -66,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       setState(() {
         if (event.containsKey('isRunActive') && event['isRunActive'] == false) {
-          _isRunActive = false; // Força o botão a desligar imediatamente
+          _isRunActive = false;
         } else {
           if (event.containsKey('seconds')) {
             _runSeconds = (event['seconds'] as num).toInt();
@@ -107,11 +112,31 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  int _calculateTotalSteps() {
+    int total = 0;
+    String todayStr = DateTime.now().toString().substring(0, 10);
+    Set<String> allKeys = {..._localHourlyBuckets.keys, ..._healthHourlyBuckets.keys};
+
+    for (String key in allKeys) {
+      if (key.startsWith(todayStr)) {
+        int local = _localHourlyBuckets[key] ?? 0;
+        int health = _healthHourlyBuckets[key] ?? 0;
+        total += max(local, health);
+      }
+    }
+    return total;
+  }
+
   Future<void> _initPedometer() async {
     final prefs = await SharedPreferences.getInstance();
     _savedStepsCount = prefs.getInt('savedStepsCount') ?? 0;
     _lastSavedDate = prefs.getString('lastSavedDate') ?? '';
-    _stepsToday = prefs.getInt('lastKnownStepsToday') ?? 0;
+    _lastLocalSteps = prefs.getInt('lastLocalSteps') ?? 0;
+
+    final String localBucketsStr = prefs.getString('localHourlyBuckets') ?? '{}';
+    final String healthBucketsStr = prefs.getString('healthHourlyBuckets') ?? '{}';
+    _localHourlyBuckets = Map<String, int>.from(jsonDecode(localBucketsStr));
+    _healthHourlyBuckets = Map<String, int>.from(jsonDecode(healthBucketsStr));
 
     _realRunningTimeMin = prefs.getDouble('realRunningTimeMin') ?? 0.0;
     _realRunningCalories = prefs.getDouble('realRunningCalories') ?? 0.0;
@@ -123,17 +148,32 @@ class _HomeScreenState extends State<HomeScreen> {
       _realRunningTimeMin = 0.0;
       _realRunningCalories = 0.0;
       _stepsToday = 0;
+      _lastLocalSteps = 0;
+      _localHourlyBuckets.clear();
+      _healthHourlyBuckets.clear();
+
       await prefs.setBool('usingHealthData', false);
       await prefs.setDouble('realRunningTimeMin', 0.0);
       await prefs.setDouble('realRunningCalories', 0.0);
       await prefs.setInt('lastKnownStepsToday', 0);
+      await prefs.setInt('lastLocalSteps', 0);
+      await prefs.setString('localHourlyBuckets', '{}');
+      await prefs.setString('healthHourlyBuckets', '{}');
     }
+
+    _stepsToday = _calculateTotalSteps();
 
     if (mounted) {
       setState(() {});
     }
 
-    if (await Permission.activityRecognition.request().isGranted) {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.activityRecognition,
+      Permission.sensors,
+    ].request();
+
+    if (statuses[Permission.activityRecognition]!.isGranted ||
+        statuses[Permission.sensors]!.isGranted) {
       _stepCountStream = Pedometer.stepCountStream;
       _stepCountStream.listen(_onStepCount).onError(_onStepCountError);
     }
@@ -144,24 +184,34 @@ class _HomeScreenState extends State<HomeScreen> {
     final types = [
       HealthDataType.STEPS,
       HealthDataType.ACTIVE_ENERGY_BURNED,
+      HealthDataType.TOTAL_CALORIES_BURNED,
       HealthDataType.WORKOUT,
+      HealthDataType.DISTANCE_DELTA,
     ];
 
     try {
       Health().configure();
-
       bool authorized = await Health().requestAuthorization(types);
 
       if (authorized) {
         final now = DateTime.now();
         final midnight = DateTime(now.year, now.month, now.day);
+        final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
-        int? steps = await Health().getTotalStepsInInterval(midnight, now);
+        for (int i = 0; i <= now.hour; i++) {
+          DateTime start = midnight.add(Duration(hours: i));
+          DateTime end = midnight.add(Duration(hours: i + 1));
+          if (end.isAfter(now)) end = now;
+
+          int? stepsInHour = await Health().getTotalStepsInInterval(start, end);
+          String hourKey = start.toString().substring(0, 13);
+          _healthHourlyBuckets[hourKey] = stepsInHour ?? 0;
+        }
 
         List<HealthDataPoint> workoutData = await Health().getHealthDataFromTypes(
           types: [HealthDataType.WORKOUT],
           startTime: midnight,
-          endTime: now,
+          endTime: endOfDay,
         );
 
         double tempRunningTime = 0.0;
@@ -177,8 +227,18 @@ class _HomeScreenState extends State<HomeScreen> {
               final durationSeconds = durationMillis ~/ 1000;
               final calories = workout.totalEnergyBurned ?? 0.0;
 
-              tempRunningTime += (durationMillis / 1000) / 60;
-              tempRunningCalories += calories;
+              final distanceMeters = workout.totalDistance ?? 0.0;
+              final distanceKm = distanceMeters / 1000.0;
+
+              double averagePace = 0.0;
+              if (distanceKm > 0) {
+                averagePace = (durationSeconds / 60.0) / distanceKm;
+              }
+
+              if (point.dateFrom.isAfter(midnight)) {
+                tempRunningTime += (durationMillis / 1000) / 60;
+                tempRunningCalories += calories;
+              }
 
               if (user != null) {
                 final docId = 'hc_${point.dateFrom.millisecondsSinceEpoch}';
@@ -190,8 +250,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     .set({
                   'timestamp': Timestamp.fromDate(point.dateFrom),
                   'durationSeconds': durationSeconds,
-                  'distanceKm': 0.0,
-                  'averagePace': 0.0,
+                  'distanceKm': distanceKm,
+                  'averagePace': averagePace,
                   'calories': calories,
                   'route': [],
                   'source': 'health_connect',
@@ -201,31 +261,24 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         }
 
-        if (steps != null && steps > 0) {
-          setState(() {
-            _stepsToday = max(_stepsToday, steps);
-            _realRunningTimeMin = tempRunningTime;
-            _realRunningCalories = tempRunningCalories;
-            _usingHealthData = true;
-          });
+        setState(() {
+          _stepsToday = _calculateTotalSteps();
+          _realRunningTimeMin = tempRunningTime;
+          _realRunningCalories = tempRunningCalories;
+          _usingHealthData = true;
+        });
 
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setInt('lastKnownStepsToday', _stepsToday);
-          await prefs.setDouble('realRunningTimeMin', _realRunningTimeMin);
-          await prefs.setDouble('realRunningCalories', _realRunningCalories);
-          await prefs.setBool('usingHealthData', _usingHealthData);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt('lastKnownStepsToday', _stepsToday);
+        await prefs.setString('healthHourlyBuckets', jsonEncode(_healthHourlyBuckets));
+        await prefs.setDouble('realRunningTimeMin', _realRunningTimeMin);
+        await prefs.setDouble('realRunningCalories', _realRunningCalories);
+        await prefs.setBool('usingHealthData', _usingHealthData);
 
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.hcSyncSuccess)),
-            );
-          }
-        } else {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.hcNoData)),
-            );
-          }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.hcSyncSuccess)),
+          );
         }
       } else {
         if (mounted) {
@@ -259,9 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'timeMin': timeMin,
         'lastUpdated': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
-    } catch (e) {
-      debugPrint('Sync historical error: $e');
-    }
+    } catch (e) {}
   }
 
   Future<void> _syncToCloud() async {
@@ -311,9 +362,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _lastSyncText = formattedSync;
           });
         }
-      } catch (e) {
-        debugPrint('Sync error: $e');
-      }
+      } catch (e) {}
     }
 
     if (mounted) {
@@ -333,13 +382,130 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _handleLogout() async {
+    await _syncToCloud();
+
+    final prefs = await SharedPreferences.getInstance();
+    final isDark = prefs.getBool('isDarkMode');
+    final lang = prefs.getString('languageCode');
+
+    await prefs.clear();
+
+    if (isDark != null) await prefs.setBool('isDarkMode', isDark);
+    if (lang != null) await prefs.setString('languageCode', lang);
+
+    await AuthService().signOut();
+  }
+
+  Future<void> _deleteAccount() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final confirm1 = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Excluir conta?'),
+        content: const Text('Isso apagará todos os seus dados. Tem certeza?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Continuar', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm1 != true || !mounted) return;
+
+    final confirm2 = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Aviso Final'),
+        content: const Text('Esta ação é irreversível. Todas as suas corridas, histórico de passos e perfil serão apagados permanentemente do servidor.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Excluir Definitivamente', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm2 != true || !mounted) return;
+
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      final runsSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('runs')
+          .get();
+      for (var doc in runsSnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+
+      final statsSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('daily_stats')
+          .get();
+      for (var doc in statsSnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+
+      batch.delete(FirebaseFirestore.instance.collection('users').doc(user.uid));
+
+      await batch.commit();
+
+      await user.delete();
+
+      final prefs = await SharedPreferences.getInstance();
+      final isDark = prefs.getBool('isDarkMode');
+      final lang = prefs.getString('languageCode');
+      await prefs.clear();
+      if (isDark != null) await prefs.setBool('isDarkMode', isDark);
+      if (lang != null) await prefs.setString('languageCode', lang);
+
+      if (mounted) {
+        Navigator.pop(context);
+        await AuthService().signOut();
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Erro ao excluir conta. Faça login novamente e tente de novo.')),
+        );
+      }
+    }
+  }
+
   Future<void> _onStepCount(StepCount event) async {
     final prefs = await SharedPreferences.getInstance();
-    final currentDate = DateTime.now().toString().substring(0, 10);
+    final currentDateStr = DateTime.now().toString();
+    final currentDate = currentDateStr.substring(0, 10);
+    final currentHourKey = currentDateStr.substring(0, 13);
 
     if (event.steps < _savedStepsCount) {
       _savedStepsCount = 0;
+      _lastLocalSteps = 0;
       await prefs.setInt('savedStepsCount', _savedStepsCount);
+      await prefs.setInt('lastLocalSteps', _lastLocalSteps);
     }
 
     if (_lastSavedDate != currentDate) {
@@ -353,31 +519,43 @@ class _HomeScreenState extends State<HomeScreen> {
       _savedStepsCount = event.steps;
       _lastSavedDate = currentDate;
       _stepsToday = 0;
+      _lastLocalSteps = 0;
+      _localHourlyBuckets.clear();
+      _healthHourlyBuckets.clear();
       _usingHealthData = false;
 
       await prefs.setInt('savedStepsCount', _savedStepsCount);
       await prefs.setString('lastSavedDate', _lastSavedDate);
       await prefs.setInt('lastKnownStepsToday', 0);
+      await prefs.setInt('lastLocalSteps', 0);
+      await prefs.setString('localHourlyBuckets', '{}');
+      await prefs.setString('healthHourlyBuckets', '{}');
       await prefs.setBool('usingHealthData', false);
       await prefs.setDouble('realRunningTimeMin', 0.0);
       await prefs.setDouble('realRunningCalories', 0.0);
     }
 
-    if (mounted && !_usingHealthData) {
+    if (mounted) {
       setState(() {
-        _stepsToday = event.steps - _savedStepsCount;
-        prefs.setInt('lastKnownStepsToday', _stepsToday);
+        int currentLocalSteps = event.steps - _savedStepsCount;
+
+        if (currentLocalSteps > _lastLocalSteps) {
+          int deltaNovosPassos = currentLocalSteps - _lastLocalSteps;
+
+          _localHourlyBuckets[currentHourKey] = (_localHourlyBuckets[currentHourKey] ?? 0) + deltaNovosPassos;
+          _lastLocalSteps = currentLocalSteps;
+
+          _stepsToday = _calculateTotalSteps();
+
+          prefs.setInt('lastLocalSteps', _lastLocalSteps);
+          prefs.setInt('lastKnownStepsToday', _stepsToday);
+          prefs.setString('localHourlyBuckets', jsonEncode(_localHourlyBuckets));
+        }
       });
     }
   }
 
-  void _onStepCountError(error) {
-    if (mounted && !_usingHealthData) {
-      setState(() {
-        _stepsToday = 0;
-      });
-    }
-  }
+  void _onStepCountError(error) {}
 
   String _getGreeting(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -620,7 +798,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               IconButton(
                 icon: const Icon(Icons.logout),
-                onPressed: () => AuthService().signOut(),
+                onPressed: _handleLogout,
               ),
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),
@@ -638,6 +816,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   } else if (value == 'language') {
                     _showLanguageDialog();
+                  } else if (value == 'delete_account') {
+                    _deleteAccount();
                   }
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -671,14 +851,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
+                  const PopupMenuDivider(),
+                  const PopupMenuItem<String>(
+                    value: 'delete_account',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_forever, size: 20, color: Colors.red),
+                        SizedBox(width: 12),
+                        Text('Excluir Conta', style: TextStyle(color: Colors.red)),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ],
           ),
         ),
       ),
-      // AQUI ESTÁ A CORREÇÃO: SafeArea + LayoutBuilder + SingleChildScrollView
-      // garante centralização perfeita em telas grandes e barra de rolagem inteligente em telas pequenas.
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
