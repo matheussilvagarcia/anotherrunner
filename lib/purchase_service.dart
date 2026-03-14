@@ -76,12 +76,24 @@ class PurchaseService {
 
   Future<void> _deliverProduct(PurchaseDetails purchaseDetails) async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user != null && purchaseDetails.productID == _premiumChartId) {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'isPremium': true,
-      }, SetOptions(merge: true));
 
-      isPremiumUser = true;
+    if (user != null && purchaseDetails.productID == _premiumChartId) {
+      try {
+        final callable = FirebaseFunctions.instance.httpsCallable('verifyPurchase');
+
+        final response = await callable.call({
+          'productId': purchaseDetails.productID,
+          'verificationData': purchaseDetails.verificationData.serverVerificationData,
+          'source': purchaseDetails.verificationData.source,
+        });
+
+        if (response.data['success'] == true) {
+          isPremiumUser = true;
+          debugPrint('Usuário validado e atualizado para Premium com sucesso!');
+        }
+      } catch (e) {
+        debugPrint('Erro ao processar liberação da compra no backend: $e');
+      }
     }
   }
 

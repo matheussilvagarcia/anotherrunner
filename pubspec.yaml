@@ -39,6 +39,8 @@ dependencies:
   in_app_purchase: ^3.2.3
   url_launcher: ^6.3.2
   http: ^1.6.0
+  cloud_functions: ^6.0.7
+  device_info_plus: ^12.3.0
 
 dev_dependencies:
   flutter_test:
