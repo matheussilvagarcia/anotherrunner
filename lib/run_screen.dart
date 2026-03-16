@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:anotherrunner/l10n/app_localizations.dart';
@@ -24,7 +22,7 @@ class _RunScreenState extends State<RunScreen> {
   Timer? _localTimer;
 
   List<LatLng> _route = [];
-  Set<Polyline> _polylines = {};
+  final Set<Polyline> _polylines = {};
 
   bool _isRunning = false;
   int _secondsElapsed = 0;
