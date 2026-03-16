@@ -106,8 +106,8 @@ class AuthService {
       }
 
       return credential;
-    } on FirebaseAuthException catch (e) {
-      throw e;
+    } on FirebaseAuthException {
+      rethrow;
     } catch (e) {
       debugPrint('Email registration error: $e');
       return null;
