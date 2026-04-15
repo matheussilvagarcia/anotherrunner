@@ -1,7 +1,5 @@
 # YARA - Yet another runner app
 
-Track runs and health data with this fully open-source Flutter codebase. 
-
 ## Setup and Configuration
 
 To run this project locally, you need to set up your own Firebase environment and provide a Google Maps API key.
