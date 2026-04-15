@@ -2,8 +2,6 @@
 
 Track runs and health data with this fully open-source Flutter codebase. 
 
-The main focus of this project is giving developers control over their own data. You can easily configure your own Firebase project to act as the backend, meaning all your run tracking and health metrics stay entirely on your own server.
-
 ## Setup and Configuration
 
 To run this project locally, you need to set up your own Firebase environment and provide a Google Maps API key.
