@@ -1,17 +1,29 @@
 <component name="libraryTable">
   <library name="Dart SDK">
     <CLASSES>
-      <root url="file://D:\Manually installed\flutter_windows_3.38.7-stable\flutter/bin/cache/dart-sdk/lib/async" />
-      <root url="file://D:\Manually installed\flutter_windows_3.38.7-stable\flutter/bin/cache/dart-sdk/lib/collection" />
-      <root url="file://D:\Manually installed\flutter_windows_3.38.7-stable\flutter/bin/cache/dart-sdk/lib/convert" />
-      <root url="file://D:\Manually installed\flutter_windows_3.38.7-stable\flutter/bin/cache/dart-sdk/lib/core" />
-      <root url="file://D:\Manually installed\flutter_windows_3.38.7-stable\flutter/bin/cache/dart-sdk/lib/developer" />
-      <root url="file://D:\Manually installed\flutter_windows_3.38.7-stable\flutter/bin/cache/dart-sdk/lib/html" />
-      <root url="file://D:\Manually installed\flutter_windows_3.38.7-stable\flutter/bin/cache/dart-sdk/lib/io" />
-      <root url="file://D:\Manually installed\flutter_windows_3.38.7-stable\flutter/bin/cache/dart-sdk/lib/isolate" />
-      <root url="file://D:\Manually installed\flutter_windows_3.38.7-stable\flutter/bin/cache/dart-sdk/lib/math" />
-      <root url="file://D:\Manually installed\flutter_windows_3.38.7-stable\flutter/bin/cache/dart-sdk/lib/mirrors" />
-      <root url="file://D:\Manually installed\flutter_windows_3.38.7-stable\flutter/bin/cache/dart-sdk/lib/typed_data" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/_internal" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/async" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/cli" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/collection" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/concurrent" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/convert" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/core" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/developer" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/ffi" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/html" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/indexed_db" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/io" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/isolate" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/js" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/js_interop" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/js_interop_unsafe" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/js_util" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/math" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/mirrors" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/svg" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/typed_data" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/web_audio" />
+      <root url="file:///opt/homebrew/share/flutter/bin/cache/dart-sdk/lib/web_gl" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

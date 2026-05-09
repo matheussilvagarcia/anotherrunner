@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1049630213063-1lv2jgi4a3kekq7p1423fkn75qu0dr2s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.matheussilvagarcia.anotherrunner",
+            "certificate_hash": "13a1814bec1864f67f1637e951207c98068067d0"
+          }
+        },
+        {
           "client_id": "1049630213063-r2q25gr2t463iia308t06jt1ruoajtho.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -28,7 +36,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAp3h869u0ujQGpPPmvOEwqAiiLRuoLCBE"
+          "current_key": "AIzaSyCfbzDMpUEYbVGK5m4rxF2Qsp5O5SXynvM"
         }
       ],
       "services": {

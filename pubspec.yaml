@@ -42,6 +42,8 @@ dependencies:
   cloud_functions: ^6.0.7
   device_info_plus: ^12.3.0
   firebase_app_check: 0.4.1+5
+  sign_in_with_apple: ^7.0.1
+  crypto: ^3.0.7
 
 dev_dependencies:
   flutter_test:

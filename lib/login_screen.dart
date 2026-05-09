@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -174,6 +175,12 @@ class _LoginScreenState extends State<LoginScreen> {
     _toggleLoading();
   }
 
+  Future<void> _signInWithApple() async {
+    _toggleLoading();
+    await _auth.signInWithApple();
+    _toggleLoading();
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -274,6 +281,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   label: Text(l10n.signInWithGoogleBtn),
                 ),
+                if (Platform.isIOS) ...[
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    onPressed: _signInWithApple,
+                    icon: const Icon(Icons.apple, color: Colors.black, size: 24),
+                    label: const Text('Sign in with Apple'),
+                  ),
+                ],
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: _resetPassword,
