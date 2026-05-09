@@ -1,7 +1,7 @@
 name: anotherrunner
 description: Open-source pedometer and run tracker application.
 publish_to: 'none'
-version: 1.0.0+1
+version: 2.0.0+2
 
 environment:
   sdk: ^3.11.1
