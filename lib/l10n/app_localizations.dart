@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @steps.
   ///
   /// In en, this message translates to:
-  /// **'STEPS'**
+  /// **'steps'**
   String get steps;
 
   /// No description provided for @startRun.
@@ -553,6 +553,390 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password reset link sent to your email!'**
   String get passwordResetSent;
+
+  /// No description provided for @myCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'My Community'**
+  String get myCommunity;
+
+  /// No description provided for @errorLoadingUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading user'**
+  String get errorLoadingUser;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @usernameInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Username already in use.'**
+  String get usernameInUse;
+
+  /// No description provided for @invalidCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid code.'**
+  String get invalidCode;
+
+  /// No description provided for @accessCodeUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Access code updated!'**
+  String get accessCodeUpdated;
+
+  /// No description provided for @createCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Community'**
+  String get createCommunity;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @joinCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Community'**
+  String get joinCommunity;
+
+  /// No description provided for @join.
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get join;
+
+  /// No description provided for @joinUsingCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Join using Code'**
+  String get joinUsingCode;
+
+  /// No description provided for @chooseUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your Username'**
+  String get chooseUsername;
+
+  /// No description provided for @yourUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Username'**
+  String get yourUsername;
+
+  /// No description provided for @username.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get username;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get requiredField;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
+  /// No description provided for @communityNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Community not found.'**
+  String get communityNotFound;
+
+  /// No description provided for @code.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get code;
+
+  /// No description provided for @weeklyRanking.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Ranking'**
+  String get weeklyRanking;
+
+  /// No description provided for @noMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'No members.'**
+  String get noMembers;
+
+  /// No description provided for @memberRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get memberRole;
+
+  /// No description provided for @superiorAdminRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Superior Admin'**
+  String get superiorAdminRole;
+
+  /// No description provided for @adminRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get adminRole;
+
+  /// No description provided for @you.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get you;
+
+  /// No description provided for @kickMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Kick'**
+  String get kickMember;
+
+  /// No description provided for @makeAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Make Admin'**
+  String get makeAdmin;
+
+  /// No description provided for @removeAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Admin'**
+  String get removeAdmin;
+
+  /// No description provided for @transferSuperior.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Superior Role'**
+  String get transferSuperior;
+
+  /// No description provided for @timeLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} day(s) and {hours} hour(s) left'**
+  String timeLeft(int days, int hours);
+
+  /// No description provided for @editCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Community'**
+  String get editCommunity;
+
+  /// No description provided for @newName.
+  ///
+  /// In en, this message translates to:
+  /// **'New Name'**
+  String get newName;
+
+  /// No description provided for @editUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Username'**
+  String get editUsername;
+
+  /// No description provided for @newUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'New Username'**
+  String get newUsername;
+
+  /// No description provided for @usernameUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Username updated successfully!'**
+  String get usernameUpdated;
+
+  /// No description provided for @updateCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Code'**
+  String get updateCodeTitle;
+
+  /// No description provided for @updateCodeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to generate a new access code? The old code will no longer work for new members.'**
+  String get updateCodeDesc;
+
+  /// No description provided for @attention.
+  ///
+  /// In en, this message translates to:
+  /// **'Attention'**
+  String get attention;
+
+  /// No description provided for @transferSuperiorBeforeLeaving.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to pass the Superior Admin role to another member before leaving the community.'**
+  String get transferSuperiorBeforeLeaving;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @leaveCommunityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Community'**
+  String get leaveCommunityTitle;
+
+  /// No description provided for @leaveCommunityLastMember.
+  ///
+  /// In en, this message translates to:
+  /// **'You are the last member. If you leave, the community will be permanently deleted. Are you sure?'**
+  String get leaveCommunityLastMember;
+
+  /// No description provided for @leaveCommunityConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to leave the community?'**
+  String get leaveCommunityConfirm;
+
+  /// No description provided for @leave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get leave;
+
+  /// No description provided for @setRewardsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Rewards'**
+  String get setRewardsTitle;
+
+  /// No description provided for @firstPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'1st Place'**
+  String get firstPlace;
+
+  /// No description provided for @secondPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'2nd Place'**
+  String get secondPlace;
+
+  /// No description provided for @thirdPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'3rd Place'**
+  String get thirdPlace;
+
+  /// No description provided for @weekDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Week Description'**
+  String get weekDescription;
+
+  /// No description provided for @rankingHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranking History'**
+  String get rankingHistoryTitle;
+
+  /// No description provided for @noHistoryYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No history available yet.'**
+  String get noHistoryYet;
+
+  /// No description provided for @unknownWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Week'**
+  String get unknownWeek;
+
+  /// No description provided for @winner.
+  ///
+  /// In en, this message translates to:
+  /// **'Winner'**
+  String get winner;
+
+  /// No description provided for @prize.
+  ///
+  /// In en, this message translates to:
+  /// **'Prize'**
+  String get prize;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @weeklyRewards.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Rewards'**
+  String get weeklyRewards;
+
+  /// No description provided for @noRewardsDefined.
+  ///
+  /// In en, this message translates to:
+  /// **'No rewards defined.'**
+  String get noRewardsDefined;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get history;
+
+  /// No description provided for @noWinner.
+  ///
+  /// In en, this message translates to:
+  /// **'No Winner'**
+  String get noWinner;
+
+  /// No description provided for @firstPlacePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'🥇 1st: '**
+  String get firstPlacePrefix;
+
+  /// No description provided for @secondPlacePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'🥈 2nd: '**
+  String get secondPlacePrefix;
+
+  /// No description provided for @thirdPlacePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'🥉 3rd: '**
+  String get thirdPlacePrefix;
 }
 
 class _AppLocalizationsDelegate
