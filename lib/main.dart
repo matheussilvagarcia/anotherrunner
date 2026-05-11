@@ -17,9 +17,17 @@ final ValueNotifier<Locale?> localeNotifier = ValueNotifier(null);
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    if (!e.toString().contains('duplicate-app')) {
+      rethrow;
+    }
+  }
+
   await initializeService();
   PurchaseService().initialize();
 
@@ -30,9 +38,10 @@ void main() async {
   if (savedLanguage != null) {
     localeNotifier.value = Locale(savedLanguage);
   }
+
   await FirebaseAppCheck.instance.activate(
     androidProvider: AndroidProvider.playIntegrity,
-    appleProvider: AppleProvider.deviceCheck, // ou appAttest
+    appleProvider: AppleProvider.deviceCheck,
   );
 
   runApp(const AnotherRunnerApp());
@@ -50,7 +59,7 @@ class AnotherRunnerApp extends StatelessWidget {
           valueListenable: localeNotifier,
           builder: (_, Locale? currentLocale, __) {
             return MaterialApp(
-              title: 'YARA',
+              title: 'MovePass',
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
               locale: currentLocale,
