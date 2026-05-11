@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboard => 'Dashboard';
 
   @override
-  String get steps => 'STEPS';
+  String get steps => 'steps';
 
   @override
   String get startRun => 'Start Run';
@@ -245,4 +245,202 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordResetSent => 'Password reset link sent to your email!';
+
+  @override
+  String get myCommunity => 'My Community';
+
+  @override
+  String get errorLoadingUser => 'Error loading user';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get usernameInUse => 'Username already in use.';
+
+  @override
+  String get invalidCode => 'Invalid code.';
+
+  @override
+  String get accessCodeUpdated => 'Access code updated!';
+
+  @override
+  String get createCommunity => 'Create Community';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get joinCommunity => 'Join Community';
+
+  @override
+  String get join => 'Join';
+
+  @override
+  String get joinUsingCode => 'Join using Code';
+
+  @override
+  String get chooseUsername => 'Choose your Username';
+
+  @override
+  String get yourUsername => 'Your Username';
+
+  @override
+  String get username => 'Username';
+
+  @override
+  String get requiredField => 'Required';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get update => 'Update';
+
+  @override
+  String get communityNotFound => 'Community not found.';
+
+  @override
+  String get code => 'Code';
+
+  @override
+  String get weeklyRanking => 'Weekly Ranking';
+
+  @override
+  String get noMembers => 'No members.';
+
+  @override
+  String get memberRole => 'Member';
+
+  @override
+  String get superiorAdminRole => 'Superior Admin';
+
+  @override
+  String get adminRole => 'Admin';
+
+  @override
+  String get you => 'You';
+
+  @override
+  String get kickMember => 'Kick';
+
+  @override
+  String get makeAdmin => 'Make Admin';
+
+  @override
+  String get removeAdmin => 'Remove Admin';
+
+  @override
+  String get transferSuperior => 'Transfer Superior Role';
+
+  @override
+  String timeLeft(int days, int hours) {
+    return '$days day(s) and $hours hour(s) left';
+  }
+
+  @override
+  String get editCommunity => 'Edit Community';
+
+  @override
+  String get newName => 'New Name';
+
+  @override
+  String get editUsername => 'Edit Username';
+
+  @override
+  String get newUsername => 'New Username';
+
+  @override
+  String get usernameUpdated => 'Username updated successfully!';
+
+  @override
+  String get updateCodeTitle => 'Update Code';
+
+  @override
+  String get updateCodeDesc =>
+      'Are you sure you want to generate a new access code? The old code will no longer work for new members.';
+
+  @override
+  String get attention => 'Attention';
+
+  @override
+  String get transferSuperiorBeforeLeaving =>
+      'You need to pass the Superior Admin role to another member before leaving the community.';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get leaveCommunityTitle => 'Leave Community';
+
+  @override
+  String get leaveCommunityLastMember =>
+      'You are the last member. If you leave, the community will be permanently deleted. Are you sure?';
+
+  @override
+  String get leaveCommunityConfirm =>
+      'Are you sure you want to leave the community?';
+
+  @override
+  String get leave => 'Leave';
+
+  @override
+  String get setRewardsTitle => 'Set Rewards';
+
+  @override
+  String get firstPlace => '1st Place';
+
+  @override
+  String get secondPlace => '2nd Place';
+
+  @override
+  String get thirdPlace => '3rd Place';
+
+  @override
+  String get weekDescription => 'Week Description';
+
+  @override
+  String get rankingHistoryTitle => 'Ranking History';
+
+  @override
+  String get noHistoryYet => 'No history available yet.';
+
+  @override
+  String get unknownWeek => 'Unknown Week';
+
+  @override
+  String get winner => 'Winner';
+
+  @override
+  String get prize => 'Prize';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get weeklyRewards => 'Weekly Rewards';
+
+  @override
+  String get noRewardsDefined => 'No rewards defined.';
+
+  @override
+  String get history => 'History';
+
+  @override
+  String get noWinner => 'No Winner';
+
+  @override
+  String get firstPlacePrefix => '🥇 1st: ';
+
+  @override
+  String get secondPlacePrefix => '🥈 2nd: ';
+
+  @override
+  String get thirdPlacePrefix => '🥉 3rd: ';
 }

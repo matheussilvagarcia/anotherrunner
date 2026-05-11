@@ -352,6 +352,26 @@ class _HomeScreenState extends State<HomeScreen> {
         }, SetOptions(merge: true));
 
         final now = DateTime.now();
+        final currentWeekday = now.weekday;
+        final startOfWeek = now.subtract(Duration(days: currentWeekday - 1));
+        final startOfWeekStr = startOfWeek.toString().substring(0, 10);
+
+        final statsSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('daily_stats')
+            .where('date', isGreaterThanOrEqualTo: startOfWeekStr)
+            .get();
+
+        int totalWeeklySteps = 0;
+        for (var doc in statsSnapshot.docs) {
+          totalWeeklySteps += (doc.data()['steps'] as num?)?.toInt() ?? 0;
+        }
+
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'weeklySteps': totalWeeklySteps,
+        }, SetOptions(merge: true));
+
         final formattedSync = '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year} at ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
         final prefs = await SharedPreferences.getInstance();
@@ -994,9 +1014,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          child: const Text(
-                            'Minha comunidade',
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                          child: Text(
+                            l10n.myCommunity,
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
