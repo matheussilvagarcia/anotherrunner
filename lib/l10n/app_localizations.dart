@@ -937,6 +937,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'🥉 3rd: '**
   String get thirdPlacePrefix;
+
+  /// No description provided for @locationPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Permission'**
+  String get locationPermissionTitle;
+
+  /// No description provided for @locationPermissionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'YARA collects location data to enable tracking of your route, calculating speed and distance during your runs, even when the app is closed or not in use.'**
+  String get locationPermissionDesc;
+
+  /// No description provided for @decline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get decline;
+
+  /// No description provided for @understood.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get understood;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account?'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This will delete all your data. Are you sure?'**
+  String get deleteAccountContent;
+
+  /// No description provided for @continueAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueAction;
+
+  /// No description provided for @finalWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Final Warning'**
+  String get finalWarningTitle;
+
+  /// No description provided for @finalWarningContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This action is irreversible. All your runs, step history, and profile will be permanently deleted from the server.'**
+  String get finalWarningContent;
+
+  /// No description provided for @deletePermanently.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Permanently'**
+  String get deletePermanently;
+
+  /// No description provided for @deleteAccountError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting account. Please log in again and try again.'**
+  String get deleteAccountError;
 }
 
 class _AppLocalizationsDelegate

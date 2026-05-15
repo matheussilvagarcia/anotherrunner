@@ -447,4 +447,44 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get thirdPlacePrefix => '🥉 3º: ';
+
+  @override
+  String get locationPermissionTitle => 'Permissão de Localização';
+
+  @override
+  String get locationPermissionDesc =>
+      'O YARA coleta dados de localização para permitir o rastreamento do seu trajeto, cálculo de velocidade e distância durante as corridas, mesmo quando o aplicativo está fechado ou não está em uso.';
+
+  @override
+  String get decline => 'Recusar';
+
+  @override
+  String get understood => 'Entendi';
+
+  @override
+  String get deleteAccount => 'Excluir Conta';
+
+  @override
+  String get deleteAccountTitle => 'Excluir conta?';
+
+  @override
+  String get deleteAccountContent =>
+      'Isso apagará todos os seus dados. Tem certeza?';
+
+  @override
+  String get continueAction => 'Continuar';
+
+  @override
+  String get finalWarningTitle => 'Aviso Final';
+
+  @override
+  String get finalWarningContent =>
+      'Esta ação é irreversível. Todas as suas corridas, histórico de passos e perfil serão apagados permanentemente do servidor.';
+
+  @override
+  String get deletePermanently => 'Excluir Definitivamente';
+
+  @override
+  String get deleteAccountError =>
+      'Erro ao excluir conta. Faça login novamente e tente de novo.';
 }
