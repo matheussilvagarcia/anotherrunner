@@ -1,7 +1,7 @@
 name: anotherrunner
 description: Open-source pedometer and run tracker application.
 publish_to: 'none'
-version: 2.0.0+2
+version: 4.0.0+4
 
 environment:
   sdk: ^3.11.1
@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # TRADUÇÕES (Movi para dentro de dependencies)
   flutter_localizations:
     sdk: flutter
   intl: any

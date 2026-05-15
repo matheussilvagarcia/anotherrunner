@@ -145,5 +145,18 @@
                     "noWinner": "Sem Vencedor",
                     "firstPlacePrefix": "🥇 1º: ",
                     "secondPlacePrefix": "🥈 2º: ",
-                    "thirdPlacePrefix": "🥉 3º: "
+                    "thirdPlacePrefix": "🥉 3º: ",
+                    "locationPermissionTitle": "Permissão de Localização",
+                      "locationPermissionDesc": "O YARA coleta dados de localização para permitir o rastreamento do seu trajeto, cálculo de velocidade e distância durante as corridas, mesmo quando o aplicativo está fechado ou não está em uso.",
+                      "decline": "Recusar",
+                      "understood": "Entendi",
+                      "deleteAccount": "Excluir Conta",
+                        "deleteAccountTitle": "Excluir conta?",
+                        "deleteAccountContent": "Isso apagará todos os seus dados. Tem certeza?",
+                        "cancel": "Cancelar",
+                        "continueAction": "Continuar",
+                        "finalWarningTitle": "Aviso Final",
+                        "finalWarningContent": "Esta ação é irreversível. Todas as suas corridas, histórico de passos e perfil serão apagados permanentemente do servidor.",
+                        "deletePermanently": "Excluir Definitivamente",
+                        "deleteAccountError": "Erro ao excluir conta. Faça login novamente e tente de novo."
 }

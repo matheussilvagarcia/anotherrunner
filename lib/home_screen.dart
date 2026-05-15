@@ -419,22 +419,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _deleteAccount() async {
+    final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
     final confirm1 = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Excluir conta?'),
-        content: const Text('Isso apagará todos os seus dados. Tem certeza?'),
+        title: Text(l10n.deleteAccountTitle),
+        content: Text(l10n.deleteAccountContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Continuar', style: TextStyle(color: Colors.red)),
+            child: Text(l10n.continueAction, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -445,16 +446,16 @@ class _HomeScreenState extends State<HomeScreen> {
     final confirm2 = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Aviso Final'),
-        content: const Text('Esta ação é irreversível. Todas as suas corridas, histórico de passos e perfil serão apagados permanentemente do servidor.'),
+        title: Text(l10n.finalWarningTitle),
+        content: Text(l10n.finalWarningContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Excluir Definitivamente', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            child: Text(l10n.deletePermanently, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -510,7 +511,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Erro ao excluir conta. Faça login novamente e tente de novo.')),
+          SnackBar(content: Text(l10n.deleteAccountError)),
         );
       }
     }
@@ -600,7 +601,73 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       _checkForActiveRun();
     } else {
-      final status = await Permission.location.request();
+      PermissionStatus notifStatus = await Permission.notification.status;
+
+      if (notifStatus.isDenied) {
+        notifStatus = await Permission.notification.request();
+      }
+
+      if (!notifStatus.isGranted) {
+        final bool? openSettings = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Notificações Desativadas'),
+              content: const Text(
+                'Você precisa habilitar as notificações nas configurações do sistema para ver o progresso da sua corrida e garantir que o aplicativo continue rastreando em segundo plano.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Continuar sem'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Abrir Configurações'),
+                ),
+              ],
+            );
+          },
+        );
+
+        if (openSettings == true) {
+          await openAppSettings();
+          return;
+        }
+      }
+
+      PermissionStatus status = await Permission.location.status;
+
+      if (!status.isGranted) {
+        final showRationale = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(l10n.locationPermissionTitle),
+              content: Text(l10n.locationPermissionDesc),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(l10n.decline),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(l10n.understood),
+                ),
+              ],
+            );
+          },
+        );
+
+        if (showRationale == true) {
+          status = await Permission.location.request();
+        } else {
+          return;
+        }
+      }
+
       if (status.isGranted) {
         if (!mounted) return;
         await Navigator.push(
@@ -873,13 +940,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const PopupMenuDivider(),
-                  const PopupMenuItem<String>(
+                  PopupMenuItem<String>(
                     value: 'delete_account',
                     child: Row(
                       children: [
-                        Icon(Icons.delete_forever, size: 20, color: Colors.red),
-                        SizedBox(width: 12),
-                        Text('Excluir Conta', style: TextStyle(color: Colors.red)),
+                        const Icon(Icons.delete_forever, size: 20, color: Colors.red),
+                        const SizedBox(width: 12),
+                        Text(l10n.deleteAccount, style: const TextStyle(color: Colors.red)),
                       ],
                     ),
                   ),

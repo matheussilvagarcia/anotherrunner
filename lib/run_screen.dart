@@ -31,6 +31,7 @@ class _RunScreenState extends State<RunScreen> {
 
   LatLng? _currentPosition;
   bool _isLoading = true;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -213,6 +214,12 @@ class _RunScreenState extends State<RunScreen> {
   }
 
   Future<void> _finishRun() async {
+    if (_isSaving) return;
+
+    setState(() {
+      _isSaving = true;
+    });
+
     _pauseRun();
 
     final user = FirebaseAuth.instance.currentUser;
@@ -228,16 +235,24 @@ class _RunScreenState extends State<RunScreen> {
         'route': _route.map((p) => {'lat': p.latitude, 'lng': p.longitude}).toList(),
       };
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('runs')
-          .add(runData);
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('runs')
+            .add(runData)
+            .timeout(const Duration(seconds: 10));
+      } catch (e) {
+        debugPrint(e.toString());
+      }
     }
 
     await _clearRunState();
 
     if (mounted) {
+      setState(() {
+        _isSaving = false;
+      });
       Navigator.pop(context);
     }
   }
@@ -326,9 +341,11 @@ class _RunScreenState extends State<RunScreen> {
                       const SizedBox(width: 24),
                       FloatingActionButton.large(
                         heroTag: 'stop',
-                        onPressed: _finishRun,
+                        onPressed: _isSaving ? null : _finishRun,
                         backgroundColor: Colors.red,
-                        child: const Icon(
+                        child: _isSaving
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : const Icon(
                           Icons.stop,
                           size: 40,
                           color: Colors.white,

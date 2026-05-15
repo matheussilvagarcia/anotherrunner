@@ -443,4 +443,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get thirdPlacePrefix => '🥉 3rd: ';
+
+  @override
+  String get locationPermissionTitle => 'Location Permission';
+
+  @override
+  String get locationPermissionDesc =>
+      'YARA collects location data to enable tracking of your route, calculating speed and distance during your runs, even when the app is closed or not in use.';
+
+  @override
+  String get decline => 'Decline';
+
+  @override
+  String get understood => 'Got it';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountTitle => 'Delete account?';
+
+  @override
+  String get deleteAccountContent =>
+      'This will delete all your data. Are you sure?';
+
+  @override
+  String get continueAction => 'Continue';
+
+  @override
+  String get finalWarningTitle => 'Final Warning';
+
+  @override
+  String get finalWarningContent =>
+      'This action is irreversible. All your runs, step history, and profile will be permanently deleted from the server.';
+
+  @override
+  String get deletePermanently => 'Delete Permanently';
+
+  @override
+  String get deleteAccountError =>
+      'Error deleting account. Please log in again and try again.';
 }
