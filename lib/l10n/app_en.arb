@@ -172,5 +172,18 @@
                     "noWinner": "No Winner",
                     "firstPlacePrefix": "🥇 1st: ",
                     "secondPlacePrefix": "🥈 2nd: ",
-                    "thirdPlacePrefix": "🥉 3rd: "
+                    "thirdPlacePrefix": "🥉 3rd: ",
+                    "locationPermissionTitle": "Location Permission",
+                      "locationPermissionDesc": "YARA collects location data to enable tracking of your route, calculating speed and distance during your runs, even when the app is closed or not in use.",
+                      "decline": "Decline",
+                      "understood": "Got it",
+                      "deleteAccount": "Delete Account",
+                        "deleteAccountTitle": "Delete account?",
+                        "deleteAccountContent": "This will delete all your data. Are you sure?",
+                        "cancel": "Cancel",
+                        "continueAction": "Continue",
+                        "finalWarningTitle": "Final Warning",
+                        "finalWarningContent": "This action is irreversible. All your runs, step history, and profile will be permanently deleted from the server.",
+                        "deletePermanently": "Delete Permanently",
+                        "deleteAccountError": "Error deleting account. Please log in again and try again."
 }

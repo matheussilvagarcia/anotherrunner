@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -9,11 +10,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> initializeService() async {
   final service = FlutterBackgroundService();
+  final prefs = await SharedPreferences.getInstance();
 
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  String lang = prefs.getString('languageCode') ?? '';
+  if (lang.isEmpty) {
+    lang = Platform.localeName.startsWith('en') ? 'en' : 'pt';
+  }
+  final isEn = lang == 'en';
+
+  final channelName = isEn ? 'Running Tracker' : 'Rastreador de Corrida';
+  final channelDesc = isEn ? 'Active run metrics' : 'Métricas de corrida ativa';
+  final initialTitle = isEn ? 'Run in progress' : 'Corrida em andamento';
+  final initialContent = isEn ? 'Starting...' : 'Iniciando...';
+
+  final AndroidNotificationChannel channel = AndroidNotificationChannel(
     'running_channel_id',
-    'Running Tracker',
-    description: 'Active run metrics',
+    channelName,
+    description: channelDesc,
     importance: Importance.low,
   );
 
@@ -30,8 +43,8 @@ Future<void> initializeService() async {
       autoStart: false,
       isForegroundMode: true,
       notificationChannelId: 'running_channel_id',
-      initialNotificationTitle: 'Corrida em andamento',
-      initialNotificationContent: 'Iniciando...',
+      initialNotificationTitle: initialTitle,
+      initialNotificationContent: initialContent,
       foregroundServiceNotificationId: 1,
     ),
     iosConfiguration: IosConfiguration(
@@ -52,12 +65,22 @@ void onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
 
   final prefs = await SharedPreferences.getInstance();
+  String lang = prefs.getString('languageCode') ?? '';
+  if (lang.isEmpty) {
+    lang = Platform.localeName.startsWith('en') ? 'en' : 'pt';
+  }
+  final isEn = lang == 'en';
+
   final isRunActive = prefs.getBool('isRunActive') ?? false;
 
   if (!isRunActive) {
     service.stopSelf();
     return;
   }
+
+  final String titleStr = isEn ? 'Run in progress' : 'Corrida em andamento';
+  final String timeLabel = isEn ? 'Time' : 'Tempo';
+  final String paceLabel = isEn ? 'Pace' : 'Ritmo';
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
@@ -149,8 +172,8 @@ void onStart(ServiceInstance service) async {
       if (await service.isForegroundService()) {
         flutterLocalNotificationsPlugin.show(
           id: 1,
-          title: 'Corrida em andamento',
-          body: 'Tempo: $timeStr | Dist: ${distanceKm.toStringAsFixed(2)} km | Ritmo: $paceStr/km',
+          title: titleStr,
+          body: '$timeLabel: $timeStr | Dist: ${distanceKm.toStringAsFixed(2)} km | $paceLabel: $paceStr/km',
           notificationDetails: const NotificationDetails(
             android: AndroidNotificationDetails(
               'running_channel_id',
