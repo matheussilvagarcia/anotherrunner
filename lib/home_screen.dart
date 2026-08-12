@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -18,7 +19,6 @@ import 'history_screen.dart';
 import 'daily_history_screen.dart';
 import 'chart_screen.dart';
 import 'main.dart';
-import 'purchase_service.dart';
 import 'credits_screen.dart';
 import 'community_screen.dart';
 
@@ -54,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _initLanguage();
     _initPedometer();
     _loadLastSyncAndAutoSync();
     _checkForActiveRun();
@@ -64,6 +65,20 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _serviceSubscription?.cancel();
     super.dispose();
+  }
+
+  Future<void> _initLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedLang = prefs.getString('languageCode');
+
+    if (savedLang == null) {
+      final systemLocale = PlatformDispatcher.instance.locale.languageCode;
+      final supported = ['en', 'pt', 'de', 'fr', 'sv'];
+      final langToSet = supported.contains(systemLocale) ? systemLocale : 'en';
+
+      localeNotifier.value = Locale(langToSet);
+      await prefs.setString('languageCode', langToSet);
+    }
   }
 
   void _listenToService() {
@@ -691,81 +706,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _showPremiumDialog() {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          elevation: 10,
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).brightness == Brightness.dark ? Colors.grey[900]! : Colors.white,
-                  Theme.of(context).brightness == Brightness.dark ? Colors.grey[850]! : Colors.blue[50]!,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.workspace_premium, color: Colors.amber, size: 72),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.unlockPremium,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.premiumDesc,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 15, height: 1.4),
-                ),
-                const SizedBox(height: 28),
-                SizedBox(
-                  width: double.infinity,
-                  height: 54,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber,
-                      foregroundColor: Colors.black,
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(27),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      PurchaseService().buyPremiumCharts();
-                    },
-                    child: Text(
-                      PurchaseService().products.isNotEmpty
-                          ? '${l10n.buyFor} ${PurchaseService().products.first.price}'
-                          : l10n.buyNow,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.maybeLater, style: const TextStyle(color: Colors.grey)),
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   void _showLanguageDialog() {
     final l10n = AppLocalizations.of(context)!;
 
@@ -781,11 +721,23 @@ class _HomeScreenState extends State<HomeScreen> {
               items: const [
                 DropdownMenuItem(
                   value: 'en',
-                  child: Text('English (US)'),
+                  child: Text('🇺🇸 English (US)'),
                 ),
                 DropdownMenuItem(
                   value: 'pt',
-                  child: Text('Português (Brasil)'),
+                  child: Text('🇧🇷 Português (Brasil)'),
+                ),
+                DropdownMenuItem(
+                  value: 'de',
+                  child: Text('🇩🇪 Deutsch'),
+                ),
+                DropdownMenuItem(
+                  value: 'fr',
+                  child: Text('🇫🇷 Français'),
+                ),
+                DropdownMenuItem(
+                  value: 'sv',
+                  child: Text('🇸🇪 Svenska'),
                 ),
               ],
               onChanged: (String? newValue) async {
@@ -834,16 +786,12 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                icon: const Icon(Icons.bar_chart, color: Colors.amberAccent, size: 28),
+                icon: const Icon(Icons.bar_chart, size: 28),
                 onPressed: () {
-                  if (PurchaseService().isPremiumUser) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ChartScreen()),
-                    );
-                  } else {
-                    _showPremiumDialog();
-                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ChartScreen()),
+                  );
                 },
               ),
               IconButton(
