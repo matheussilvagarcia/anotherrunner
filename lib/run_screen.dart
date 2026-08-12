@@ -55,25 +55,27 @@ class _RunScreenState extends State<RunScreen> {
         }
         if (event.containsKey('distance')) {
           _distanceKm = (event['distance'] as num).toDouble();
-          if (_distanceKm > 0 && _secondsElapsed > 0) {
-            _pace = (_secondsElapsed / 60) / _distanceKm;
-          }
         }
-        if (event.containsKey('lat') && event.containsKey('lng')) {
+        if (event.containsKey('pace')) {
+          _pace = (event['pace'] as num).toDouble();
+        }
+        if (event.containsKey('lat') && event.containsKey('lng') && event['lat'] != null && event['lng'] != null) {
           final newLatLng = LatLng(
               (event['lat'] as num).toDouble(),
               (event['lng'] as num).toDouble()
           );
-          _route.add(newLatLng);
-          _polylines.add(
-            Polyline(
-              polylineId: const PolylineId('route'),
-              points: _route,
-              color: Colors.blue,
-              width: 5,
-            ),
-          );
-          _moveCamera(newLatLng);
+          if (_route.isEmpty || _route.last.latitude != newLatLng.latitude || _route.last.longitude != newLatLng.longitude) {
+            _route.add(newLatLng);
+            _polylines.add(
+              Polyline(
+                polylineId: const PolylineId('route'),
+                points: _route,
+                color: Colors.blue,
+                width: 5,
+              ),
+            );
+            _moveCamera(newLatLng);
+          }
         }
       });
     });
@@ -144,7 +146,7 @@ class _RunScreenState extends State<RunScreen> {
 
   Future<void> _locateUser() async {
     Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+      desiredAccuracy: LocationAccuracy.bestForNavigation,
     );
     if (mounted) {
       setState(() {
@@ -162,14 +164,13 @@ class _RunScreenState extends State<RunScreen> {
     }
   }
 
-  void _startRun() {
+  Future<void> _startRun() async {
     setState(() {
       _isRunning = true;
     });
 
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.setBool('isRunActive', true);
-    });
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isRunActive', true);
 
     _localTimer?.cancel();
     _localTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
