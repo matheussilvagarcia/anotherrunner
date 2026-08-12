@@ -65,6 +65,8 @@ void onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
 
   final prefs = await SharedPreferences.getInstance();
+  await prefs.reload();
+
   String lang = prefs.getString('languageCode') ?? '';
   if (lang.isEmpty) {
     lang = Platform.localeName.startsWith('en') ? 'en' : 'pt';
@@ -106,22 +108,21 @@ void onStart(ServiceInstance service) async {
   late LocationSettings locationSettings;
   if (defaultTargetPlatform == TargetPlatform.android) {
     locationSettings = AndroidSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 5,
-      forceLocationManager: true,
+      accuracy: LocationAccuracy.bestForNavigation,
+      distanceFilter: 1,
     );
   } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
     locationSettings = AppleSettings(
-      accuracy: LocationAccuracy.high,
+      accuracy: LocationAccuracy.bestForNavigation,
       activityType: ActivityType.fitness,
-      distanceFilter: 5,
+      distanceFilter: 1,
       pauseLocationUpdatesAutomatically: false,
       allowBackgroundLocationUpdates: true,
     );
   } else {
     locationSettings = const LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 5,
+      accuracy: LocationAccuracy.bestForNavigation,
+      distanceFilter: 1,
     );
   }
 
@@ -141,32 +142,24 @@ void onStart(ServiceInstance service) async {
     route.add(newPoint);
     prefs.setDouble('runDistance', distanceKm);
     prefs.setString('runRoute', jsonEncode(route));
-
-    service.invoke('update', {
-      'seconds': secondsElapsed,
-      'distance': distanceKm,
-      'lat': position.latitude,
-      'lng': position.longitude,
-      'isRunActive': true,
-    });
   });
 
   final timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
     secondsElapsed++;
     prefs.setInt('runSeconds', secondsElapsed);
 
-    double pace = 0.0;
+    double currentPace = 0.0;
     if (distanceKm > 0) {
-      pace = (secondsElapsed / 60) / distanceKm;
+      currentPace = (secondsElapsed / 60) / distanceKm;
     }
 
     final int minutes = secondsElapsed ~/ 60;
     final int remainingSeconds = secondsElapsed % 60;
     final timeStr = '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
 
-    int pMinutes = pace.floor();
-    int pSeconds = ((pace - pMinutes) * 60).floor();
-    String paceStr = pace > 0 ? '$pMinutes:${pSeconds.toString().padLeft(2, '0')}' : '0:00';
+    int pMinutes = currentPace.floor();
+    int pSeconds = ((currentPace - pMinutes) * 60).floor();
+    String paceStr = currentPace > 0 ? '$pMinutes:${pSeconds.toString().padLeft(2, '0')}' : '0:00';
 
     if (service is AndroidServiceInstance) {
       if (await service.isForegroundService()) {
@@ -191,6 +184,9 @@ void onStart(ServiceInstance service) async {
     service.invoke('update', {
       'seconds': secondsElapsed,
       'distance': distanceKm,
+      'pace': currentPace,
+      'lat': route.isNotEmpty ? route.last['lat'] : null,
+      'lng': route.isNotEmpty ? route.last['lng'] : null,
       'isRunActive': true,
     });
   });
