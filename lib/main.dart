@@ -60,7 +60,7 @@ class AnotherRunnerApp extends StatelessWidget {
           builder: (_, Locale? currentLocale, __) {
             return MaterialApp(
               debugShowCheckedModeBanner: false,
-              title: 'YARA',
+              title: 'MovePass',
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
               locale: currentLocale,
