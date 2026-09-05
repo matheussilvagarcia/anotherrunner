@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -35,6 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int _savedStepsCount = 0;
   int _lastLocalSteps = 0;
   String _lastSavedDate = '';
+
+  // Variáveis para armazenar os passos do OUTRO aparelho (Cross-Device)
+  int _cloudOtherPlatformSteps = 0;
+  double _cloudOtherPlatformCalories = 0.0;
+  double _cloudOtherPlatformTime = 0.0;
 
   Map<String, int> _localHourlyBuckets = {};
   Map<String, int> _healthHourlyBuckets = {};
@@ -128,7 +134,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  int _calculateTotalSteps() {
+  // Calcula APENAS os passos registrados por ESTE aparelho específico
+  int _calculateLocalSteps() {
     int total = 0;
     String todayStr = DateTime.now().toString().substring(0, 10);
     Set<String> allKeys = {..._localHourlyBuckets.keys, ..._healthHourlyBuckets.keys};
@@ -149,6 +156,10 @@ class _HomeScreenState extends State<HomeScreen> {
     _lastSavedDate = prefs.getString('lastSavedDate') ?? '';
     _lastLocalSteps = prefs.getInt('lastLocalSteps') ?? 0;
 
+    _cloudOtherPlatformSteps = prefs.getInt('cloudOtherPlatformSteps') ?? 0;
+    _cloudOtherPlatformCalories = prefs.getDouble('cloudOtherPlatformCalories') ?? 0.0;
+    _cloudOtherPlatformTime = prefs.getDouble('cloudOtherPlatformTime') ?? 0.0;
+
     final String localBucketsStr = prefs.getString('localHourlyBuckets') ?? '{}';
     final String healthBucketsStr = prefs.getString('healthHourlyBuckets') ?? '{}';
     _localHourlyBuckets = Map<String, int>.from(jsonDecode(localBucketsStr));
@@ -165,6 +176,10 @@ class _HomeScreenState extends State<HomeScreen> {
       _realRunningCalories = 0.0;
       _stepsToday = 0;
       _lastLocalSteps = 0;
+      _cloudOtherPlatformSteps = 0;
+      _cloudOtherPlatformCalories = 0.0;
+      _cloudOtherPlatformTime = 0.0;
+
       _localHourlyBuckets.clear();
       _healthHourlyBuckets.clear();
 
@@ -173,11 +188,16 @@ class _HomeScreenState extends State<HomeScreen> {
       await prefs.setDouble('realRunningCalories', 0.0);
       await prefs.setInt('lastKnownStepsToday', 0);
       await prefs.setInt('lastLocalSteps', 0);
+
+      await prefs.setInt('cloudOtherPlatformSteps', 0);
+      await prefs.setDouble('cloudOtherPlatformCalories', 0.0);
+      await prefs.setDouble('cloudOtherPlatformTime', 0.0);
+
       await prefs.setString('localHourlyBuckets', '{}');
       await prefs.setString('healthHourlyBuckets', '{}');
     }
 
-    _stepsToday = _calculateTotalSteps();
+    _stepsToday = _calculateLocalSteps() + _cloudOtherPlatformSteps;
 
     if (mounted) {
       setState(() {});
@@ -197,10 +217,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _syncWithHealthConnect() async {
     final l10n = AppLocalizations.of(context)!;
-    final types = [
+
+    final types = Platform.isIOS
+        ? [
       HealthDataType.STEPS,
       HealthDataType.ACTIVE_ENERGY_BURNED,
+      HealthDataType.WORKOUT,
+      HealthDataType.DISTANCE_WALKING_RUNNING,
+    ]
+        : [
+      HealthDataType.STEPS,
       HealthDataType.TOTAL_CALORIES_BURNED,
+      HealthDataType.ACTIVE_ENERGY_BURNED,
       HealthDataType.WORKOUT,
       HealthDataType.DISTANCE_DELTA,
     ];
@@ -278,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
 
         setState(() {
-          _stepsToday = _calculateTotalSteps();
+          _stepsToday = _calculateLocalSteps() + _cloudOtherPlatformSteps;
           _realRunningTimeMin = tempRunningTime;
           _realRunningCalories = tempRunningCalories;
           _usingHealthData = true;
@@ -290,6 +318,9 @@ class _HomeScreenState extends State<HomeScreen> {
         await prefs.setDouble('realRunningTimeMin', _realRunningTimeMin);
         await prefs.setDouble('realRunningCalories', _realRunningCalories);
         await prefs.setBool('usingHealthData', _usingHealthData);
+
+        // Dispara sincronização com a nuvem após puxar os dados físicos locais
+        await _syncToCloud();
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -312,20 +343,38 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || steps <= 0) return;
 
-    final distance = steps * 0.000762;
+    final String currentPlatform = Platform.isIOS ? 'ios' : 'android';
 
     try {
-      await FirebaseFirestore.instance
+      final docRef = FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .collection('daily_stats')
-          .doc(dateStr)
-          .set({
+          .doc(dateStr);
+
+      final docSnap = await docRef.get();
+      int otherSteps = 0;
+      double otherCal = 0.0;
+      double otherTime = 0.0;
+
+      if (docSnap.exists) {
+        final data = docSnap.data()!;
+        final String otherPlatform = Platform.isIOS ? 'android' : 'ios';
+        otherSteps = (data['steps_$otherPlatform'] as num?)?.toInt() ?? 0;
+        otherCal = (data['calories_$otherPlatform'] as num?)?.toDouble() ?? 0.0;
+        otherTime = (data['timeMin_$otherPlatform'] as num?)?.toDouble() ?? 0.0;
+      }
+
+      await docRef.set({
         'date': dateStr,
-        'steps': steps,
-        'distanceKm': distance,
-        'calories': calories,
-        'timeMin': timeMin,
+        'steps_$currentPlatform': steps,
+        'calories_$currentPlatform': calories,
+        'timeMin_$currentPlatform': timeMin,
+
+        'steps': steps + otherSteps,
+        'distanceKm': (steps + otherSteps) * 0.000762,
+        'calories': calories + otherCal,
+        'timeMin': timeMin + otherTime,
         'lastUpdated': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (e) {}
@@ -341,31 +390,67 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final dateStr = DateTime.now().toString().substring(0, 10);
-      final distance = _stepsToday * 0.000762;
-
-      final caloriesToSave = _usingHealthData && _realRunningCalories > 0
-          ? _realRunningCalories
-          : (_stepsToday * 0.04);
-
-      final timeToSave = _usingHealthData && _realRunningTimeMin > 0
-          ? _realRunningTimeMin
-          : (_stepsToday / 100);
 
       try {
-        await FirebaseFirestore.instance
+        final docRef = FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
             .collection('daily_stats')
-            .doc(dateStr)
-            .set({
+            .doc(dateStr);
+
+        final docSnap = await docRef.get();
+        final String currentPlatform = Platform.isIOS ? 'ios' : 'android';
+        final String otherPlatform = Platform.isIOS ? 'android' : 'ios';
+
+        // 1. LER CAIXINHA DA OUTRA PLATAFORMA
+        if (docSnap.exists) {
+          final data = docSnap.data()!;
+          _cloudOtherPlatformSteps = (data['steps_$otherPlatform'] as num?)?.toInt() ?? 0;
+          _cloudOtherPlatformCalories = (data['calories_$otherPlatform'] as num?)?.toDouble() ?? 0.0;
+          _cloudOtherPlatformTime = (data['timeMin_$otherPlatform'] as num?)?.toDouble() ?? 0.0;
+
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setInt('cloudOtherPlatformSteps', _cloudOtherPlatformSteps);
+          await prefs.setDouble('cloudOtherPlatformCalories', _cloudOtherPlatformCalories);
+          await prefs.setDouble('cloudOtherPlatformTime', _cloudOtherPlatformTime);
+        }
+
+        // 2. EXTRAIR CAIXINHA DESTA PLATAFORMA
+        int localSteps = _calculateLocalSteps();
+        double localCalories = _usingHealthData && _realRunningCalories > 0
+            ? _realRunningCalories
+            : (localSteps * 0.04);
+        double localTime = _usingHealthData && _realRunningTimeMin > 0
+            ? _realRunningTimeMin
+            : (localSteps / 100);
+
+        // 3. SOMAR AS DUAS CAIXINHAS
+        int combinedSteps = localSteps + _cloudOtherPlatformSteps;
+        double combinedCalories = localCalories + _cloudOtherPlatformCalories;
+        double combinedTime = localTime + _cloudOtherPlatformTime;
+        double combinedDistance = combinedSteps * 0.000762;
+
+        if (mounted) {
+          setState(() {
+            _stepsToday = combinedSteps;
+          });
+        }
+
+        // 4. GRAVAR DADOS
+        await docRef.set({
           'date': dateStr,
-          'steps': _stepsToday,
-          'distanceKm': distance,
-          'calories': caloriesToSave,
-          'timeMin': timeToSave,
+          'steps_$currentPlatform': localSteps,
+          'calories_$currentPlatform': localCalories,
+          'timeMin_$currentPlatform': localTime,
+
+          'steps': combinedSteps,
+          'distanceKm': combinedDistance,
+          'calories': combinedCalories,
+          'timeMin': combinedTime,
           'lastUpdated': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
 
+        // 5. ATUALIZAR PASSOS SEMANAIS
         final now = DateTime.now();
         final currentWeekday = now.weekday;
         final startOfWeek = now.subtract(Duration(days: currentWeekday - 1));
@@ -398,7 +483,9 @@ class _HomeScreenState extends State<HomeScreen> {
             _lastSyncText = formattedSync;
           });
         }
-      } catch (e) {}
+      } catch (e) {
+        debugPrint('Erro no _syncToCloud: $e');
+      }
     }
 
     if (mounted) {
@@ -557,6 +644,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _lastSavedDate = currentDate;
       _stepsToday = 0;
       _lastLocalSteps = 0;
+      _cloudOtherPlatformSteps = 0;
       _localHourlyBuckets.clear();
       _healthHourlyBuckets.clear();
       _usingHealthData = false;
@@ -565,6 +653,7 @@ class _HomeScreenState extends State<HomeScreen> {
       await prefs.setString('lastSavedDate', _lastSavedDate);
       await prefs.setInt('lastKnownStepsToday', 0);
       await prefs.setInt('lastLocalSteps', 0);
+      await prefs.setInt('cloudOtherPlatformSteps', 0);
       await prefs.setString('localHourlyBuckets', '{}');
       await prefs.setString('healthHourlyBuckets', '{}');
       await prefs.setBool('usingHealthData', false);
@@ -582,7 +671,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _localHourlyBuckets[currentHourKey] = (_localHourlyBuckets[currentHourKey] ?? 0) + deltaNovosPassos;
           _lastLocalSteps = currentLocalSteps;
 
-          _stepsToday = _calculateTotalSteps();
+          _stepsToday = _calculateLocalSteps() + _cloudOtherPlatformSteps;
 
           prefs.setInt('lastLocalSteps', _lastLocalSteps);
           prefs.setInt('lastKnownStepsToday', _stepsToday);
@@ -721,23 +810,23 @@ class _HomeScreenState extends State<HomeScreen> {
               items: const [
                 DropdownMenuItem(
                   value: 'en',
-                  child: Text('🇺🇸 English (US)'),
+                  child: Text('�� English (US)'),
                 ),
                 DropdownMenuItem(
                   value: 'pt',
-                  child: Text('🇧🇷 Português (Brasil)'),
+                  child: Text('�� Português (Brasil)'),
                 ),
                 DropdownMenuItem(
                   value: 'de',
-                  child: Text('🇩🇪 Deutsch'),
+                  child: Text('�� Deutsch'),
                 ),
                 DropdownMenuItem(
                   value: 'fr',
-                  child: Text('🇫🇷 Français'),
+                  child: Text('�� Français'),
                 ),
                 DropdownMenuItem(
                   value: 'sv',
-                  child: Text('🇸🇪 Svenska'),
+                  child: Text('�� Svenska'),
                 ),
               ],
               onChanged: (String? newValue) async {
@@ -763,13 +852,17 @@ class _HomeScreenState extends State<HomeScreen> {
     final l10n = AppLocalizations.of(context)!;
     final String distance = (_stepsToday * 0.000762).toStringAsFixed(2);
 
-    final String displayCalories = _usingHealthData && _realRunningCalories > 0
-        ? _realRunningCalories.toStringAsFixed(0)
-        : (_stepsToday * 0.04).toStringAsFixed(0);
+    final double localCalories = _usingHealthData && _realRunningCalories > 0
+        ? _realRunningCalories
+        : (_calculateLocalSteps() * 0.04);
+    final double totalCalories = localCalories + _cloudOtherPlatformCalories;
+    final String displayCalories = totalCalories.toStringAsFixed(0);
 
-    final String displayTime = _usingHealthData && _realRunningTimeMin > 0
-        ? _realRunningTimeMin.toStringAsFixed(0)
-        : (_stepsToday / 100).toStringAsFixed(0);
+    final double localTime = _usingHealthData && _realRunningTimeMin > 0
+        ? _realRunningTimeMin
+        : (_calculateLocalSteps() / 100);
+    final double totalTime = localTime + _cloudOtherPlatformTime;
+    final String displayTime = totalTime.toStringAsFixed(0);
 
     final double activeRunCalories = _runDistance * 70.0;
     final int runMinutes = _runSeconds ~/ 60;
