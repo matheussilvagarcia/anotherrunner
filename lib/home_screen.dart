@@ -810,23 +810,23 @@ class _HomeScreenState extends State<HomeScreen> {
               items: const [
                 DropdownMenuItem(
                   value: 'en',
-                  child: Text('�� English (US)'),
+                  child: Text('\u{1F1FA}\u{1F1F8} English (US)'),
                 ),
                 DropdownMenuItem(
                   value: 'pt',
-                  child: Text('�� Português (Brasil)'),
+                  child: Text('\u{1F1E7}\u{1F1F7} Português (Brasil)'),
                 ),
                 DropdownMenuItem(
                   value: 'de',
-                  child: Text('�� Deutsch'),
+                  child: Text('\u{1F1E9}\u{1F1EA} Deutsch'),
                 ),
                 DropdownMenuItem(
                   value: 'fr',
-                  child: Text('�� Français'),
+                  child: Text('\u{1F1EB}\u{1F1F7} Français'),
                 ),
                 DropdownMenuItem(
                   value: 'sv',
-                  child: Text('�� Svenska'),
+                  child: Text('\u{1F1F8}\u{1F1EA} Svenska'),
                 ),
               ],
               onChanged: (String? newValue) async {
