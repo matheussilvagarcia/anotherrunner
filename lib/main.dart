@@ -41,7 +41,7 @@ void main() async {
 
   await FirebaseAppCheck.instance.activate(
     androidProvider: AndroidProvider.playIntegrity,
-    appleProvider: AppleProvider.deviceCheck,
+    appleProvider: AppleProvider.debug,
   );
 
   runApp(const AnotherRunnerApp());
@@ -60,7 +60,7 @@ class AnotherRunnerApp extends StatelessWidget {
           builder: (_, Locale? currentLocale, __) {
             return MaterialApp(
               debugShowCheckedModeBanner: false,
-              title: 'MovePass',
+              title: 'YARA',
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
               locale: currentLocale,
