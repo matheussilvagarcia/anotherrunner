@@ -87,5 +87,9 @@
        <string>UIInterfaceOrientationLandscapeLeft</string>
        <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
+    <key>NSHealthShareUsageDescription</key>
+    <string>YARA precisa ler seus passos, calorias e atividades físicas para calcular suas médias e exibir no dashboard.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>YARA precisa de autorização para atualizar e salvar seus treinos no Apple Health.</string>
 </dict>
 </plist>
