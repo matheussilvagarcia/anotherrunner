@@ -1,0 +1,6 @@
+"NSLocationWhenInUseUsageDescription" = "Wir benötigen Ihren Standort, um die Distanz Ihres Laufs zu erfassen.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Wir benötigen Ihren Standort im Hintergrund, um Ihren Lauf weiterhin zu erfassen.";
+"NSLocationAlwaysUsageDescription" = "Wir benötigen Ihren Standort im Hintergrund, um Ihren Lauf weiterhin zu erfassen.";
+"NSMotionUsageDescription" = "Wir benötigen Zugriff auf die Bewegungssensoren, um Ihre täglichen Schritte zu zählen.";
+"NSHealthShareUsageDescription" = "YARA muss Ihre Schritte, Kalorien und körperlichen Aktivitäten lesen, um Durchschnittswerte zu berechnen und im Dashboard anzuzeigen.";
+"NSHealthUpdateUsageDescription" = "YARA benötigt die Berechtigung, um Ihre Trainings in Apple Health zu aktualisieren und zu speichern.";

@@ -1,0 +1,6 @@
+"NSLocationWhenInUseUsageDescription" = "Precisamos da sua localização para rastrear a distância da sua corrida.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Precisamos da sua localização para continuar rastreando sua corrida em segundo plano.";
+"NSLocationAlwaysUsageDescription" = "Precisamos da sua localização para continuar rastreando sua corrida em segundo plano.";
+"NSMotionUsageDescription" = "Precisamos acessar os sensores de movimento para contar seus passos diários.";
+"NSHealthShareUsageDescription" = "YARA precisa ler seus passos, calorias e atividades físicas para calcular suas médias e exibir no dashboard.";
+"NSHealthUpdateUsageDescription" = "YARA precisa de autorização para atualizar e salvar seus treinos no Apple Health.";
