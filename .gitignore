@@ -1,3 +1,4 @@
+ios/Flutter/Secrets.xcconfig
 .env
 *.class
 *.log
