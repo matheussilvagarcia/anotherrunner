@@ -1,0 +1,6 @@
+"NSLocationWhenInUseUsageDescription" = "Vi behöver din plats för att spåra distansen på din löprunda.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Vi behöver din plats i bakgrunden för att fortsätta spåra din löprunda.";
+"NSLocationAlwaysUsageDescription" = "Vi behöver din plats i bakgrunden för att fortsätta spåra din löprunda.";
+"NSMotionUsageDescription" = "Vi behöver åtkomst till rörelsesensorer för att räkna dina dagliga steg.";
+"NSHealthShareUsageDescription" = "YARA behöver läsa dina steg, kalorier och fysiska aktiviteter för att beräkna genomsnitt och visa dem i instrumentpanelen.";
+"NSHealthUpdateUsageDescription" = "YARA behöver tillstånd för att uppdatera och spara dina träningspass i Apple Health.";

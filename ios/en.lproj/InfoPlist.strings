@@ -1,0 +1,6 @@
+"NSLocationWhenInUseUsageDescription" = "We need your location to track your run distance.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "We need your location in the background to keep tracking your run.";
+"NSLocationAlwaysUsageDescription" = "We need your location in the background to keep tracking your run.";
+"NSMotionUsageDescription" = "We need to access motion sensors to count your daily steps.";
+"NSHealthShareUsageDescription" = "YARA needs to read your steps, calories, and physical activities to calculate averages and display them on the dashboard.";
+"NSHealthUpdateUsageDescription" = "YARA needs authorization to update and save your workouts in Apple Health.";
