@@ -36,4 +36,4 @@ ios/Runner/GoogleService-Info.plist
 *.jks
 *.keystore
 firebase-debug.log
-functions/.env
+functions/.envios/GoogleService-Info.plist
