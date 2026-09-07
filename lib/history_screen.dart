@@ -21,8 +21,8 @@ class HistoryScreen extends StatelessWidget {
     if (routeData.isEmpty) return '';
 
     List<LatLng> points = routeData.map((p) => LatLng(p['lat'], p['lng'])).toList();
-    String pathString = 'weight:5|color:0x0000ffff|enc:';
-    pathString += _encodePolyline(points);
+    String encodedPolyline = Uri.encodeComponent(_encodePolyline(points));
+    String pathString = 'weight:5|color:0x0000ffff|enc:$encodedPolyline';
 
     final apiKey = dotenv.env['MAPS_API_KEY'] ?? '';
     return 'https://maps.googleapis.com/maps/api/staticmap?size=600x300&scale=2&maptype=roadmap&path=$pathString&key=$apiKey';

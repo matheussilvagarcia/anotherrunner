@@ -22,7 +22,7 @@ class _RunScreenState extends State<RunScreen> {
   Timer? _localTimer;
 
   List<LatLng> _route = [];
-  final Set<Polyline> _polylines = {};
+  Map<PolylineId, Polyline> _polylines = {};
 
   bool _isRunning = false;
   int _secondsElapsed = 0;
@@ -36,9 +36,13 @@ class _RunScreenState extends State<RunScreen> {
   @override
   void initState() {
     super.initState();
-    _locateUser();
-    _recoverRunState();
+    _initializeScreen();
     _listenToService();
+  }
+
+  Future<void> _initializeScreen() async {
+    await _recoverRunState();
+    await _locateUser();
   }
 
   void _listenToService() {
@@ -66,13 +70,11 @@ class _RunScreenState extends State<RunScreen> {
           );
           if (_route.isEmpty || _route.last.latitude != newLatLng.latitude || _route.last.longitude != newLatLng.longitude) {
             _route.add(newLatLng);
-            _polylines.add(
-              Polyline(
-                polylineId: const PolylineId('route'),
-                points: _route,
-                color: Colors.blue,
-                width: 5,
-              ),
+            _polylines[const PolylineId('route')] = Polyline(
+              polylineId: const PolylineId('route'),
+              points: List.from(_route),
+              color: Colors.blue,
+              width: 5,
             );
             _moveCamera(newLatLng);
           }
@@ -83,54 +85,65 @@ class _RunScreenState extends State<RunScreen> {
 
   Future<void> _recoverRunState() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+
     final isActive = prefs.getBool('isRunActive') ?? false;
 
-    setState(() {
-      _secondsElapsed = prefs.getInt('runSeconds') ?? 0;
-      _distanceKm = prefs.getDouble('runDistance') ?? 0.0;
-      if (_distanceKm > 0 && _secondsElapsed > 0) {
-        _pace = (_secondsElapsed / 60) / _distanceKm;
+    final routeString = prefs.getString('runRoute');
+    if (routeString != null) {
+      final List decoded = jsonDecode(routeString);
+      _route = decoded.map((p) => LatLng((p['lat'] as num).toDouble(), (p['lng'] as num).toDouble())).toList();
+      if (_route.isNotEmpty) {
+        _currentPosition = _route.last;
+        _polylines[const PolylineId('route')] = Polyline(
+          polylineId: const PolylineId('route'),
+          points: List.from(_route),
+          color: Colors.blue,
+          width: 5,
+        );
       }
+    }
 
-      final routeString = prefs.getString('runRoute');
-      if (routeString != null) {
-        final List decoded = jsonDecode(routeString);
-        _route = decoded.map((p) => LatLng((p['lat'] as num).toDouble(), (p['lng'] as num).toDouble())).toList();
-        if (_route.isNotEmpty) {
-          _polylines.add(
-            Polyline(
-              polylineId: const PolylineId('route'),
-              points: _route,
-              color: Colors.blue,
-              width: 5,
-            ),
-          );
+    if (mounted) {
+      setState(() {
+        _secondsElapsed = prefs.getInt('runSeconds') ?? 0;
+        _distanceKm = prefs.getDouble('runDistance') ?? 0.0;
+        if (_distanceKm > 0.002 && _secondsElapsed > 0) {
+          _pace = (_secondsElapsed / 60) / _distanceKm;
+          if (_pace > 99.0) {
+            _pace = 0.0;
+          }
+        } else {
+          _pace = 0.0;
         }
-      }
-    });
+      });
+    }
 
     if (isActive) {
       final isRunningInBg = await FlutterBackgroundService().isRunning();
 
-      if (isRunningInBg) {
+      if (mounted) {
         setState(() {
-          _isRunning = true;
+          _isRunning = isRunningInBg;
         });
+      }
 
+      if (isRunningInBg) {
         _localTimer?.cancel();
         _localTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
           if (mounted) {
             setState(() {
               _secondsElapsed++;
-              if (_distanceKm > 0) {
+              if (_distanceKm > 0.002) {
                 _pace = (_secondsElapsed / 60) / _distanceKm;
+                if (_pace > 99.0) {
+                  _pace = 0.0;
+                }
+              } else {
+                _pace = 0.0;
               }
             });
           }
-        });
-      } else {
-        setState(() {
-          _isRunning = false;
         });
       }
     }
@@ -145,14 +158,24 @@ class _RunScreenState extends State<RunScreen> {
   }
 
   Future<void> _locateUser() async {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.bestForNavigation,
-    );
-    if (mounted) {
-      setState(() {
-        _currentPosition = LatLng(position.latitude, position.longitude);
-        _isLoading = false;
-      });
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.bestForNavigation,
+      );
+      if (mounted) {
+        setState(() {
+          _currentPosition = LatLng(position.latitude, position.longitude);
+          _isLoading = false;
+        });
+        _moveCamera(_currentPosition!);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _currentPosition ??= const LatLng(0, 0);
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -177,8 +200,11 @@ class _RunScreenState extends State<RunScreen> {
       if (mounted) {
         setState(() {
           _secondsElapsed++;
-          if (_distanceKm > 0) {
+          if (_distanceKm > 0.002) {
             _pace = (_secondsElapsed / 60) / _distanceKm;
+            if (_pace > 99.0) _pace = 0.0;
+          } else {
+            _pace = 0.0;
           }
         });
       }
@@ -197,6 +223,7 @@ class _RunScreenState extends State<RunScreen> {
   }
 
   Future<void> _moveCamera(LatLng position) async {
+    if (!_controller.isCompleted) return;
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newLatLng(position));
   }
@@ -243,9 +270,7 @@ class _RunScreenState extends State<RunScreen> {
             .collection('runs')
             .add(runData)
             .timeout(const Duration(seconds: 10));
-      } catch (e) {
-        debugPrint(e.toString());
-      }
+      } catch (e) {}
     }
 
     await _clearRunState();
@@ -289,7 +314,7 @@ class _RunScreenState extends State<RunScreen> {
               ),
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
-              polylines: _polylines,
+              polylines: Set<Polyline>.of(_polylines.values),
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },

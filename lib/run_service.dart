@@ -90,10 +90,32 @@ void onStart(ServiceInstance service) async {
   const AndroidInitializationSettings initializationSettingsAndroid =
   AndroidInitializationSettings('ic_notification');
 
-  const InitializationSettings initializationSettings =
-  InitializationSettings(android: initializationSettingsAndroid);
+  const DarwinInitializationSettings initializationSettingsIOS =
+  DarwinInitializationSettings();
+
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
+  );
 
   await flutterLocalNotificationsPlugin.initialize(settings: initializationSettings);
+
+  bool isIOS = defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS;
+
+  if (isIOS) {
+    flutterLocalNotificationsPlugin.show(
+      id: 1,
+      title: titleStr,
+      body: isEn ? 'Tracking your run in the background' : 'Monitorando sua corrida em segundo plano',
+      notificationDetails: const NotificationDetails(
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentSound: false,
+          presentBadge: false,
+        ),
+      ),
+    );
+  }
 
   int secondsElapsed = prefs.getInt('runSeconds') ?? 0;
   double distanceKm = prefs.getDouble('runDistance') ?? 0.0;
@@ -102,7 +124,10 @@ void onStart(ServiceInstance service) async {
   final routeString = prefs.getString('runRoute');
   if (routeString != null) {
     final List decoded = jsonDecode(routeString);
-    route = decoded.map((p) => {'lat': p['lat'] as double, 'lng': p['lng'] as double}).toList();
+    route = decoded.map((p) => {
+      'lat': (p['lat'] as num).toDouble(),
+      'lng': (p['lng'] as num).toDouble()
+    }).toList();
   }
 
   late LocationSettings locationSettings;
@@ -111,7 +136,7 @@ void onStart(ServiceInstance service) async {
       accuracy: LocationAccuracy.bestForNavigation,
       distanceFilter: 1,
     );
-  } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
+  } else if (isIOS) {
     locationSettings = AppleSettings(
       accuracy: LocationAccuracy.bestForNavigation,
       activityType: ActivityType.fitness,
@@ -149,8 +174,9 @@ void onStart(ServiceInstance service) async {
     prefs.setInt('runSeconds', secondsElapsed);
 
     double currentPace = 0.0;
-    if (distanceKm > 0) {
+    if (distanceKm > 0.002) {
       currentPace = (secondsElapsed / 60) / distanceKm;
+      if (currentPace > 99.0) currentPace = 0.0;
     }
 
     final int minutes = secondsElapsed ~/ 60;
@@ -161,7 +187,7 @@ void onStart(ServiceInstance service) async {
     int pSeconds = ((currentPace - pMinutes) * 60).floor();
     String paceStr = currentPace > 0 ? '$pMinutes:${pSeconds.toString().padLeft(2, '0')}' : '0:00';
 
-    if (service is AndroidServiceInstance) {
+    if (!isIOS && service is AndroidServiceInstance) {
       if (await service.isForegroundService()) {
         flutterLocalNotificationsPlugin.show(
           id: 1,
@@ -194,6 +220,7 @@ void onStart(ServiceInstance service) async {
   service.on('stopService').listen((event) {
     timer.cancel();
     positionStream.cancel();
+    flutterLocalNotificationsPlugin.cancel(id: 1);
     service.invoke('update', {'isRunActive': false});
     service.stopSelf();
   });
