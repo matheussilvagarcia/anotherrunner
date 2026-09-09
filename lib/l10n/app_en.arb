@@ -185,5 +185,8 @@
                         "finalWarningTitle": "Final Warning",
                         "finalWarningContent": "This action is irreversible. All your runs, step history, and profile will be permanently deleted from the server.",
                         "deletePermanently": "Delete Permanently",
-                        "deleteAccountError": "Error deleting account. Please log in again and try again."
+                        "deleteAccountError": "Error deleting account. Please log in again and try again.",
+                        "syncAppleHealth": "Sync with Apple Health",
+                          "appleHealthSyncSuccess": "Synced with Apple Health successfully!",
+                          "appleHealthPermissionDenied": "Apple Health permissions denied."
 }

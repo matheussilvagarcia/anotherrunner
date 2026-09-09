@@ -485,4 +485,14 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get deleteAccountError =>
       'Fel vid radering av konto. Vänligen logga in igen och försök på nytt.';
+
+  @override
+  String get syncAppleHealth => 'Synkronisera med Apple Health';
+
+  @override
+  String get appleHealthSyncSuccess => 'Synkroniserades med Apple Health!';
+
+  @override
+  String get appleHealthPermissionDenied =>
+      'Behörigheter för Apple Health nekades.';
 }

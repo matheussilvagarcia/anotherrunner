@@ -487,4 +487,15 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get deleteAccountError =>
       'Erro ao excluir conta. Faça login novamente e tente de novo.';
+
+  @override
+  String get syncAppleHealth => 'Sincronizar com Apple Health';
+
+  @override
+  String get appleHealthSyncSuccess =>
+      'Sincronizado com Apple Health com sucesso!';
+
+  @override
+  String get appleHealthPermissionDenied =>
+      'Permissões do Apple Health negadas.';
 }

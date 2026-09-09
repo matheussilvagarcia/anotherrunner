@@ -488,4 +488,15 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get deleteAccountError =>
       'Fehler beim Löschen des Kontos. Bitte melde dich erneut an und versuche es noch einmal.';
+
+  @override
+  String get syncAppleHealth => 'Mit Apple Health synchronisieren';
+
+  @override
+  String get appleHealthSyncSuccess =>
+      'Erfolgreich mit Apple Health synchronisiert!';
+
+  @override
+  String get appleHealthPermissionDenied =>
+      'Apple Health-Berechtigungen verweigert.';
 }

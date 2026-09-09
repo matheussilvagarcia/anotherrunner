@@ -20,12 +20,33 @@ class HistoryScreen extends StatelessWidget {
   String _getStaticMapUrl(List<dynamic> routeData) {
     if (routeData.isEmpty) return '';
 
-    List<LatLng> points = routeData.map((p) => LatLng(p['lat'], p['lng'])).toList();
-    String encodedPolyline = Uri.encodeComponent(_encodePolyline(points));
-    String pathString = 'weight:5|color:0x0000ffff|enc:$encodedPolyline';
+    List<LatLng> points = [];
+    for (var p in routeData) {
+      if (p is GeoPoint) {
+        points.add(LatLng(p.latitude, p.longitude));
+      } else if (p is Map) {
+        final lat = p['latitude'] ?? p['lat'];
+        final lng = p['longitude'] ?? p['lng'];
+        if (lat != null && lng != null) {
+          points.add(LatLng((lat as num).toDouble(), (lng as num).toDouble()));
+        }
+      }
+    }
 
-    final apiKey = dotenv.env['MAPS_API_KEY'] ?? '';
-    return 'https://maps.googleapis.com/maps/api/staticmap?size=600x300&scale=2&maptype=roadmap&path=$pathString&key=$apiKey';
+    if (points.isEmpty) return '';
+
+    String encodedPolyline = _encodePolyline(points);
+    final apiKey = dotenv.env['STATIC_MAPS_API_KEY'] ?? '';
+
+    final uri = Uri.https('maps.googleapis.com', '/maps/api/staticmap', {
+      'size': '600x300',
+      'scale': '2',
+      'maptype': 'roadmap',
+      'path': 'weight:5|color:0x0000ffff|enc:$encodedPolyline',
+      'key': apiKey,
+    });
+
+    return uri.toString();
   }
 
   String _encodePolyline(List<LatLng> points) {
@@ -244,6 +265,10 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
+    if (widget.mapUrl.isNotEmpty) {
+      debugPrint('MAP_URL_DOC_${widget.docId}: ${widget.mapUrl}');
+    }
+
     return Screenshot(
       controller: _screenshotController,
       child: Card(
@@ -290,16 +315,14 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
                   ),
                 ],
               ),
-              if (widget.source == 'health_connect')
+              if (widget.source == 'health_connect' || widget.source == 'apple_health')
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Row(
                     children: [
-                      SvgPicture.asset(
-                        'lib/assets/HealthConnect.svg',
-                        width: 16,
-                        height: 16,
-                      ),
+                      Platform.isIOS
+                          ? Image.asset('lib/assets/HealthKit.png', width: 16, height: 16)
+                          : SvgPicture.asset('lib/assets/HealthConnect.svg', width: 16, height: 16),
                       const SizedBox(width: 8),
                       Text(
                         l10n.capturedByHealthConnect,
@@ -328,6 +351,7 @@ class _RunHistoryCardState extends State<RunHistoryCard> {
                       widget.mapUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
+                        debugPrint('MAP_ERROR_DOC_${widget.docId}: $error');
                         return const Center(
                           child: Icon(Icons.map_outlined, color: Colors.grey, size: 40),
                         );

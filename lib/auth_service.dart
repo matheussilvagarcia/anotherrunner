@@ -123,12 +123,13 @@ class AuthService {
     final random = Random.secure();
     return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
   }
-
   Future<UserCredential?> signInWithApple() async {
     try {
+      debugPrint('--- INICIANDO LOGIN APPLE ---');
       final rawNonce = _generateNonce();
       final nonce = sha256.convert(utf8.encode(rawNonce)).toString();
 
+      debugPrint('1. Solicitando credencial nativa da Apple...');
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
@@ -137,25 +138,41 @@ class AuthService {
         nonce: nonce,
       );
 
+      if (appleCredential.identityToken == null) {
+        debugPrint('ERRO: A Apple não retornou o identityToken.');
+        return null;
+      }
+      debugPrint('2. Credencial recebida da Apple com sucesso.');
+
       final OAuthProvider oAuthProvider = OAuthProvider('apple.com');
       final AuthCredential credential = oAuthProvider.credential(
         idToken: appleCredential.identityToken,
         rawNonce: rawNonce,
       );
 
+      debugPrint('3. Enviando token para o Firebase...');
       final UserCredential userCredential = await _auth.signInWithCredential(credential);
+
+      debugPrint('4. Autenticado no Firebase com sucesso. UID: ${userCredential.user?.uid}');
 
       if (userCredential.user != null) {
         await _saveUserToFirestore(userCredential.user!);
       }
 
       return userCredential;
-    } catch (e) {
-      debugPrint('Apple sign in error: $e');
+    } on FirebaseAuthException catch (e) {
+      debugPrint('=== ERRO FIREBASE AUTH ===');
+      debugPrint('Código: ${e.code}');
+      debugPrint('Mensagem: ${e.message}');
+      debugPrint('Detalhes adicionais: ${e.credential?.providerId}');
+      return null;
+    } catch (e, stackTrace) {
+      debugPrint('=== ERRO DESCONHECIDO APPLE SIGN IN ===');
+      debugPrint(e.toString());
+      debugPrint(stackTrace.toString());
       return null;
     }
   }
-
   Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();

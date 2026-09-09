@@ -1015,6 +1015,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error deleting account. Please log in again and try again.'**
   String get deleteAccountError;
+
+  /// No description provided for @syncAppleHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync with Apple Health'**
+  String get syncAppleHealth;
+
+  /// No description provided for @appleHealthSyncSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced with Apple Health successfully!'**
+  String get appleHealthSyncSuccess;
+
+  /// No description provided for @appleHealthPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Health permissions denied.'**
+  String get appleHealthPermissionDenied;
 }
 
 class _AppLocalizationsDelegate

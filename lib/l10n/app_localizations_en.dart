@@ -483,4 +483,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteAccountError =>
       'Error deleting account. Please log in again and try again.';
+
+  @override
+  String get syncAppleHealth => 'Sync with Apple Health';
+
+  @override
+  String get appleHealthSyncSuccess => 'Synced with Apple Health successfully!';
+
+  @override
+  String get appleHealthPermissionDenied => 'Apple Health permissions denied.';
 }
