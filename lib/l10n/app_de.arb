@@ -156,5 +156,8 @@
   "finalWarningTitle": "Letzte Warnung",
   "finalWarningContent": "Diese Aktion ist unwiderruflich. Alle deine Läufe, dein Schrittverlauf und dein Profil werden dauerhaft vom Server gelöscht.",
   "deletePermanently": "Dauerhaft löschen",
-  "deleteAccountError": "Fehler beim Löschen des Kontos. Bitte melde dich erneut an und versuche es noch einmal."
+  "deleteAccountError": "Fehler beim Löschen des Kontos. Bitte melde dich erneut an und versuche es noch einmal.",
+  "syncAppleHealth": "Mit Apple Health synchronisieren",
+    "appleHealthSyncSuccess": "Erfolgreich mit Apple Health synchronisiert!",
+    "appleHealthPermissionDenied": "Apple Health-Berechtigungen verweigert."
 }

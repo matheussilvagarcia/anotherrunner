@@ -41,8 +41,13 @@ class _RunScreenState extends State<RunScreen> {
   }
 
   Future<void> _initializeScreen() async {
-    await _recoverRunState();
-    await _locateUser();
+    try {
+      await _recoverRunState();
+    } catch (e) {
+      debugPrint("Erro ao recuperar estado da corrida: $e");
+    } finally {
+      await _locateUser();
+    }
   }
 
   void _listenToService() {
@@ -91,16 +96,20 @@ class _RunScreenState extends State<RunScreen> {
 
     final routeString = prefs.getString('runRoute');
     if (routeString != null) {
-      final List decoded = jsonDecode(routeString);
-      _route = decoded.map((p) => LatLng((p['lat'] as num).toDouble(), (p['lng'] as num).toDouble())).toList();
-      if (_route.isNotEmpty) {
-        _currentPosition = _route.last;
-        _polylines[const PolylineId('route')] = Polyline(
-          polylineId: const PolylineId('route'),
-          points: List.from(_route),
-          color: Colors.blue,
-          width: 5,
-        );
+      try {
+        final List decoded = jsonDecode(routeString);
+        _route = decoded.map((p) => LatLng((p['lat'] as num).toDouble(), (p['lng'] as num).toDouble())).toList();
+        if (_route.isNotEmpty) {
+          _currentPosition = _route.last;
+          _polylines[const PolylineId('route')] = Polyline(
+            polylineId: const PolylineId('route'),
+            points: List.from(_route),
+            color: Colors.blue,
+            width: 5,
+          );
+        }
+      } catch (e) {
+        debugPrint("Erro no parse da rota salva: $e");
       }
     }
 
@@ -159,9 +168,11 @@ class _RunScreenState extends State<RunScreen> {
 
   Future<void> _locateUser() async {
     try {
+      // Timeout adicionado para evitar o loading infinito se o GPS não responder
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation,
-      );
+        desiredAccuracy: LocationAccuracy.high,
+      ).timeout(const Duration(seconds: 5));
+
       if (mounted) {
         setState(() {
           _currentPosition = LatLng(position.latitude, position.longitude);
@@ -170,9 +181,13 @@ class _RunScreenState extends State<RunScreen> {
         _moveCamera(_currentPosition!);
       }
     } catch (e) {
+      // Fallback para a última posição ou coordenada padrão em caso de erro/timeout
+      Position? lastPosition = await Geolocator.getLastKnownPosition();
       if (mounted) {
         setState(() {
-          _currentPosition ??= const LatLng(0, 0);
+          _currentPosition = lastPosition != null
+              ? LatLng(lastPosition.latitude, lastPosition.longitude)
+              : const LatLng(0, 0);
           _isLoading = false;
         });
       }
@@ -270,7 +285,9 @@ class _RunScreenState extends State<RunScreen> {
             .collection('runs')
             .add(runData)
             .timeout(const Duration(seconds: 10));
-      } catch (e) {}
+      } catch (e) {
+        debugPrint("Erro ao salvar corrida no Firebase: $e");
+      }
     }
 
     await _clearRunState();
@@ -316,7 +333,9 @@ class _RunScreenState extends State<RunScreen> {
               myLocationButtonEnabled: true,
               polylines: Set<Polyline>.of(_polylines.values),
               onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
+                if (!_controller.isCompleted) {
+                  _controller.complete(controller);
+                }
               },
             ),
           ),

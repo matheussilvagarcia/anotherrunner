@@ -156,5 +156,8 @@
   "finalWarningTitle": "Avertissement final",
   "finalWarningContent": "Cette action est irréversible. Toutes vos courses, votre historique de pas et votre profil seront définitivement supprimés du serveur.",
   "deletePermanently": "Supprimer définitivement",
-  "deleteAccountError": "Erreur lors de la suppression du compte. Veuillez vous reconnecter et réessayer."
+  "deleteAccountError": "Erreur lors de la suppression du compte. Veuillez vous reconnecter et réessayer.",
+  "syncAppleHealth": "Synchroniser avec Apple Health",
+    "appleHealthSyncSuccess": "Synchronisé avec Apple Health avec succès !",
+    "appleHealthPermissionDenied": "Autorisations Apple Health refusées."
 }

@@ -37,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int _lastLocalSteps = 0;
   String _lastSavedDate = '';
 
-  // Variáveis para armazenar os passos do OUTRO aparelho (Cross-Device)
   int _cloudOtherPlatformSteps = 0;
   double _cloudOtherPlatformCalories = 0.0;
   double _cloudOtherPlatformTime = 0.0;
@@ -134,7 +133,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Calcula APENAS os passos registrados por ESTE aparelho específico
   int _calculateLocalSteps() {
     int total = 0;
     String todayStr = DateTime.now().toString().substring(0, 10);
@@ -319,7 +317,6 @@ class _HomeScreenState extends State<HomeScreen> {
         await prefs.setDouble('realRunningCalories', _realRunningCalories);
         await prefs.setBool('usingHealthData', _usingHealthData);
 
-        // Dispara sincronização com a nuvem após puxar os dados físicos locais
         await _syncToCloud();
 
         if (mounted) {
@@ -402,7 +399,6 @@ class _HomeScreenState extends State<HomeScreen> {
         final String currentPlatform = Platform.isIOS ? 'ios' : 'android';
         final String otherPlatform = Platform.isIOS ? 'android' : 'ios';
 
-        // 1. LER CAIXINHA DA OUTRA PLATAFORMA
         if (docSnap.exists) {
           final data = docSnap.data()!;
           _cloudOtherPlatformSteps = (data['steps_$otherPlatform'] as num?)?.toInt() ?? 0;
@@ -415,7 +411,6 @@ class _HomeScreenState extends State<HomeScreen> {
           await prefs.setDouble('cloudOtherPlatformTime', _cloudOtherPlatformTime);
         }
 
-        // 2. EXTRAIR CAIXINHA DESTA PLATAFORMA
         int localSteps = _calculateLocalSteps();
         double localCalories = _usingHealthData && _realRunningCalories > 0
             ? _realRunningCalories
@@ -424,7 +419,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ? _realRunningTimeMin
             : (localSteps / 100);
 
-        // 3. SOMAR AS DUAS CAIXINHAS
         int combinedSteps = localSteps + _cloudOtherPlatformSteps;
         double combinedCalories = localCalories + _cloudOtherPlatformCalories;
         double combinedTime = localTime + _cloudOtherPlatformTime;
@@ -436,7 +430,6 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         }
 
-        // 4. GRAVAR DADOS
         await docRef.set({
           'date': dateStr,
           'steps_$currentPlatform': localSteps,
@@ -450,7 +443,6 @@ class _HomeScreenState extends State<HomeScreen> {
           'lastUpdated': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
 
-        // 5. ATUALIZAR PASSOS SEMANAIS
         final now = DateTime.now();
         final currentWeekday = now.weekday;
         final startOfWeek = now.subtract(Duration(days: currentWeekday - 1));
@@ -1090,13 +1082,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 28,
                         child: OutlinedButton.icon(
                           onPressed: _syncWithHealthConnect,
-                          icon: SvgPicture.asset(
+                          icon: Platform.isIOS
+                              ? Image.asset(
+                            'lib/assets/HealthKit.png',
+                            width: 18,
+                            height: 18,
+                          )
+                              : SvgPicture.asset(
                             'lib/assets/HealthConnect.svg',
                             width: 18,
                             height: 18,
                           ),
                           label: Text(
-                            l10n.syncHealthConnect,
+                            Platform.isIOS ? l10n.syncAppleHealth : l10n.syncHealthConnect,
                             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                           style: OutlinedButton.styleFrom(

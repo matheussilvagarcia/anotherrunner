@@ -489,4 +489,15 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get deleteAccountError =>
       'Erreur lors de la suppression du compte. Veuillez vous reconnecter et réessayer.';
+
+  @override
+  String get syncAppleHealth => 'Synchroniser avec Apple Health';
+
+  @override
+  String get appleHealthSyncSuccess =>
+      'Synchronisé avec Apple Health avec succès !';
+
+  @override
+  String get appleHealthPermissionDenied =>
+      'Autorisations Apple Health refusées.';
 }

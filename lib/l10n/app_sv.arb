@@ -156,5 +156,8 @@
   "finalWarningTitle": "Sista varningen",
   "finalWarningContent": "Denna åtgärd är oåterkallelig. Alla dina löprundor, din steghistorik och din profil kommer att raderas permanent från servern.",
   "deletePermanently": "Radera permanent",
-  "deleteAccountError": "Fel vid radering av konto. Vänligen logga in igen och försök på nytt."
+  "deleteAccountError": "Fel vid radering av konto. Vänligen logga in igen och försök på nytt.",
+  "syncAppleHealth": "Synkronisera med Apple Health",
+    "appleHealthSyncSuccess": "Synkroniserades med Apple Health!",
+    "appleHealthPermissionDenied": "Behörigheter för Apple Health nekades."
 }

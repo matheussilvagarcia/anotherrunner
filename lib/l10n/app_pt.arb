@@ -158,5 +158,8 @@
                         "finalWarningTitle": "Aviso Final",
                         "finalWarningContent": "Esta ação é irreversível. Todas as suas corridas, histórico de passos e perfil serão apagados permanentemente do servidor.",
                         "deletePermanently": "Excluir Definitivamente",
-                        "deleteAccountError": "Erro ao excluir conta. Faça login novamente e tente de novo."
+                        "deleteAccountError": "Erro ao excluir conta. Faça login novamente e tente de novo.",
+                        "syncAppleHealth": "Sincronizar com Apple Health",
+                          "appleHealthSyncSuccess": "Sincronizado com Apple Health com sucesso!",
+                          "appleHealthPermissionDenied": "Permissões do Apple Health negadas."
 }
