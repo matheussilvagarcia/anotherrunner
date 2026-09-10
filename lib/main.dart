@@ -10,6 +10,7 @@ import 'run_service.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'purchase_service.dart';
 import 'package:anotherrunner/l10n/app_localizations.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 final ValueNotifier<Locale?> localeNotifier = ValueNotifier(null);
@@ -27,7 +28,6 @@ void main() async {
       rethrow;
     }
   }
-
   await initializeService();
   PurchaseService().initialize();
 
@@ -43,7 +43,7 @@ void main() async {
     androidProvider: AndroidProvider.playIntegrity,
     appleProvider: AppleProvider.debug,
   );
-
+  FirebaseFirestore.setLoggingEnabled(false);
   runApp(const AnotherRunnerApp());
 }
 

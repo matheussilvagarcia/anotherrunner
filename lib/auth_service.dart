@@ -123,6 +123,7 @@ class AuthService {
     final random = Random.secure();
     return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
   }
+
   Future<UserCredential?> signInWithApple() async {
     try {
       debugPrint('--- INICIANDO LOGIN APPLE ---');
@@ -148,6 +149,7 @@ class AuthService {
       final AuthCredential credential = oAuthProvider.credential(
         idToken: appleCredential.identityToken,
         rawNonce: rawNonce,
+        accessToken: appleCredential.authorizationCode,
       );
 
       debugPrint('3. Enviando token para o Firebase...');
@@ -173,6 +175,7 @@ class AuthService {
       return null;
     }
   }
+
   Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
