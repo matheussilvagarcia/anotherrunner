@@ -126,11 +126,9 @@ class AuthService {
 
   Future<UserCredential?> signInWithApple() async {
     try {
-      debugPrint('--- INICIANDO LOGIN APPLE ---');
       final rawNonce = _generateNonce();
       final nonce = sha256.convert(utf8.encode(rawNonce)).toString();
 
-      debugPrint('1. Solicitando credencial nativa da Apple...');
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
@@ -140,10 +138,8 @@ class AuthService {
       );
 
       if (appleCredential.identityToken == null) {
-        debugPrint('ERRO: A Apple não retornou o identityToken.');
         return null;
       }
-      debugPrint('2. Credencial recebida da Apple com sucesso.');
 
       final OAuthProvider oAuthProvider = OAuthProvider('apple.com');
       final AuthCredential credential = oAuthProvider.credential(
@@ -152,10 +148,7 @@ class AuthService {
         accessToken: appleCredential.authorizationCode,
       );
 
-      debugPrint('3. Enviando token para o Firebase...');
       final UserCredential userCredential = await _auth.signInWithCredential(credential);
-
-      debugPrint('4. Autenticado no Firebase com sucesso. UID: ${userCredential.user?.uid}');
 
       if (userCredential.user != null) {
         await _saveUserToFirestore(userCredential.user!);
@@ -163,15 +156,10 @@ class AuthService {
 
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      debugPrint('=== ERRO FIREBASE AUTH ===');
-      debugPrint('Código: ${e.code}');
-      debugPrint('Mensagem: ${e.message}');
-      debugPrint('Detalhes adicionais: ${e.credential?.providerId}');
+      debugPrint(e.code);
       return null;
-    } catch (e, stackTrace) {
-      debugPrint('=== ERRO DESCONHECIDO APPLE SIGN IN ===');
+    } catch (e) {
       debugPrint(e.toString());
-      debugPrint(stackTrace.toString());
       return null;
     }
   }
@@ -207,6 +195,34 @@ class AuthService {
       await _auth.signOut();
     } catch (e) {
       debugPrint('Sign out error: $e');
+    }
+  }
+
+  Future<bool> deleteAccount() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) return false;
+
+      final String uid = user.uid;
+
+      final usernamesQuery = await _firestore.collection('usernames').where('uid', isEqualTo: uid).get();
+      for (var doc in usernamesQuery.docs) {
+        await doc.reference.delete();
+      }
+
+      await _firestore.collection('users').doc(uid).delete();
+
+      await user.delete();
+
+      await _googleSignIn.signOut();
+
+      return true;
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Erro FirebaseAuth ao deletar: ${e.code}');
+      return false;
+    } catch (e) {
+      debugPrint('Erro geral ao deletar: $e');
+      return false;
     }
   }
 }
