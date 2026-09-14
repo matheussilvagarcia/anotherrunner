@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:anotherrunner/l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_service.dart';
+import 'main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -181,6 +183,22 @@ class _LoginScreenState extends State<LoginScreen> {
     _toggleLoading();
   }
 
+  Future<void> _changeLanguage(String languageCode) async {
+    localeNotifier.value = Locale(languageCode);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('languageCode', languageCode);
+  }
+
+  Widget _buildFlag(String flag, String langCode) {
+    return GestureDetector(
+      onTap: () => _changeLanguage(langCode),
+      child: Text(
+        flag,
+        style: const TextStyle(fontSize: 28),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -296,6 +314,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     l10n.forgotPasswordBtn,
                     style: const TextStyle(color: Colors.grey),
                   ),
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildFlag('\u{1F1FA}\u{1F1F8}', 'en'),
+                    const SizedBox(width: 16),
+                    _buildFlag('\u{1F1E7}\u{1F1F7}', 'pt'),
+                    const SizedBox(width: 16),
+                    _buildFlag('\u{1F1EB}\u{1F1F7}', 'fr'),
+                    const SizedBox(width: 16),
+                    _buildFlag('\u{1F1E9}\u{1F1EA}', 'de'),
+                    const SizedBox(width: 16),
+                    _buildFlag('\u{1F1F8}\u{1F1EA}', 'sv'),
+                  ],
                 ),
               ]
             ],
