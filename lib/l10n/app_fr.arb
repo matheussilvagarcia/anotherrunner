@@ -159,5 +159,8 @@
   "deleteAccountError": "Erreur lors de la suppression du compte. Veuillez vous reconnecter et réessayer.",
   "syncAppleHealth": "Synchroniser avec Apple Health",
     "appleHealthSyncSuccess": "Synchronisé avec Apple Health avec succès !",
-    "appleHealthPermissionDenied": "Autorisations Apple Health refusées."
+    "appleHealthPermissionDenied": "Autorisations Apple Health refusées.",
+    "checkSpamMessage": "Veuillez également vérifier votre dossier de courriers indésirables (spam).",
+    "resetPasswordTitle": "Réinitialiser le mot de passe",
+    "okBtn": "OK"
 }

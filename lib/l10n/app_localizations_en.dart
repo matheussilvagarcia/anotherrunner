@@ -492,4 +492,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appleHealthPermissionDenied => 'Apple Health permissions denied.';
+
+  @override
+  String get checkSpamMessage => 'Please, also check your spam or junk folder.';
+
+  @override
+  String get resetPasswordTitle => 'Reset Password';
+
+  @override
+  String get okBtn => 'OK';
 }

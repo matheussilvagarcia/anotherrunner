@@ -495,4 +495,13 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get appleHealthPermissionDenied =>
       'Behörigheter för Apple Health nekades.';
+
+  @override
+  String get checkSpamMessage => 'Vänligen kontrollera även din skräppostmapp.';
+
+  @override
+  String get resetPasswordTitle => 'Återställ lösenord';
+
+  @override
+  String get okBtn => 'OK';
 }

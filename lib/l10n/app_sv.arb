@@ -159,5 +159,8 @@
   "deleteAccountError": "Fel vid radering av konto. Vänligen logga in igen och försök på nytt.",
   "syncAppleHealth": "Synkronisera med Apple Health",
     "appleHealthSyncSuccess": "Synkroniserades med Apple Health!",
-    "appleHealthPermissionDenied": "Behörigheter för Apple Health nekades."
+    "appleHealthPermissionDenied": "Behörigheter för Apple Health nekades.",
+    "checkSpamMessage": "Vänligen kontrollera även din skräppostmapp.",
+    "resetPasswordTitle": "Återställ lösenord",
+    "okBtn": "OK"
 }

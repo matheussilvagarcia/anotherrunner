@@ -188,5 +188,8 @@
                         "deleteAccountError": "Error deleting account. Please log in again and try again.",
                         "syncAppleHealth": "Sync with Apple Health",
                           "appleHealthSyncSuccess": "Synced with Apple Health successfully!",
-                          "appleHealthPermissionDenied": "Apple Health permissions denied."
+                          "appleHealthPermissionDenied": "Apple Health permissions denied.",
+                          "checkSpamMessage": "Please, also check your spam or junk folder.",
+                          "resetPasswordTitle": "Reset Password",
+                          "okBtn": "OK"
 }
