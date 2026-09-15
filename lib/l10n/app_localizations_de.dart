@@ -499,4 +499,14 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get appleHealthPermissionDenied =>
       'Apple Health-Berechtigungen verweigert.';
+
+  @override
+  String get checkSpamMessage =>
+      'Bitte überprüfen Sie auch Ihren Spam- oder Junk-Ordner.';
+
+  @override
+  String get resetPasswordTitle => 'Passwort zurücksetzen';
+
+  @override
+  String get okBtn => 'OK';
 }

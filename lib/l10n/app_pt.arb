@@ -161,5 +161,8 @@
                         "deleteAccountError": "Erro ao excluir conta. Faça login novamente e tente de novo.",
                         "syncAppleHealth": "Sincronizar com Apple Health",
                           "appleHealthSyncSuccess": "Sincronizado com Apple Health com sucesso!",
-                          "appleHealthPermissionDenied": "Permissões do Apple Health negadas."
+                          "appleHealthPermissionDenied": "Permissões do Apple Health negadas.",
+                          "checkSpamMessage": "Por favor, verifique também a sua caixa de spam ou lixo eletrônico.",
+                          "resetPasswordTitle": "Redefinir Senha",
+                          "okBtn": "OK"
 }

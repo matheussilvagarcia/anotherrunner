@@ -1033,6 +1033,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Apple Health permissions denied.'**
   String get appleHealthPermissionDenied;
+
+  /// No description provided for @checkSpamMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please, also check your spam or junk folder.'**
+  String get checkSpamMessage;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @okBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get okBtn;
 }
 
 class _AppLocalizationsDelegate

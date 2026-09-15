@@ -500,4 +500,14 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get appleHealthPermissionDenied =>
       'Autorisations Apple Health refusées.';
+
+  @override
+  String get checkSpamMessage =>
+      'Veuillez également vérifier votre dossier de courriers indésirables (spam).';
+
+  @override
+  String get resetPasswordTitle => 'Réinitialiser le mot de passe';
+
+  @override
+  String get okBtn => 'OK';
 }

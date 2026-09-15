@@ -70,9 +70,13 @@ class AuthService {
     try {
       final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('sendOtpEmail');
 
+      final expirationTime = DateTime.now().add(const Duration(minutes: 10));
+      final timeLimit = '${expirationTime.hour.toString().padLeft(2, '0')}:${expirationTime.minute.toString().padLeft(2, '0')}';
+
       final response = await callable.call(<String, dynamic>{
         'email': email,
         'otp': otp,
+        'time': timeLimit,
       });
 
       if (response.data['success'] == true) {

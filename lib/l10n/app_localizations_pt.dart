@@ -498,4 +498,14 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get appleHealthPermissionDenied =>
       'Permissões do Apple Health negadas.';
+
+  @override
+  String get checkSpamMessage =>
+      'Por favor, verifique também a sua caixa de spam ou lixo eletrônico.';
+
+  @override
+  String get resetPasswordTitle => 'Redefinir Senha';
+
+  @override
+  String get okBtn => 'OK';
 }

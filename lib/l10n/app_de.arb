@@ -159,5 +159,8 @@
   "deleteAccountError": "Fehler beim Löschen des Kontos. Bitte melde dich erneut an und versuche es noch einmal.",
   "syncAppleHealth": "Mit Apple Health synchronisieren",
     "appleHealthSyncSuccess": "Erfolgreich mit Apple Health synchronisiert!",
-    "appleHealthPermissionDenied": "Apple Health-Berechtigungen verweigert."
+    "appleHealthPermissionDenied": "Apple Health-Berechtigungen verweigert.",
+    "checkSpamMessage": "Bitte überprüfen Sie auch Ihren Spam- oder Junk-Ordner.",
+    "resetPasswordTitle": "Passwort zurücksetzen",
+    "okBtn": "OK"
 }
