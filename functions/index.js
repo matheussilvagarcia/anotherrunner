@@ -15,6 +15,11 @@ exports.sendOtpEmail = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError('invalid-argument', 'Email, OTP e tempo sao obrigatorios.');
   }
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw new functions.https.HttpsError('invalid-argument', 'Formato de email invalido.');
+  }
+
   try {
     await axios.post('https://api.emailjs.com/api/v1.0/email/send', {
       service_id: process.env.EMAILJS_SERVICE_ID,
@@ -29,8 +34,7 @@ exports.sendOtpEmail = functions.https.onCall(async (data, context) => {
     });
     return { success: true };
   } catch (error) {
-    const errorDetails = error.response ? JSON.stringify(error.response.data) : error.message;
-    throw new functions.https.HttpsError('unknown', errorDetails);
+    throw new functions.https.HttpsError('internal', 'Erro interno ao processar a solicitacao.');
   }
 });
 
@@ -54,15 +58,23 @@ async function verifyAndroidPurchase(productId, token) {
 }
 
 async function verifyIOSPurchase(token) {
-  const isSandbox = true;
-  const url = isSandbox ? 'https://sandbox.itunes.apple.com/verifyReceipt' : 'https://buy.itunes.apple.com/verifyReceipt';
   const password = process.env.APPLE_SHARED_SECRET || "";
+  const prodUrl = 'https://buy.itunes.apple.com/verifyReceipt';
+  const sandboxUrl = 'https://sandbox.itunes.apple.com/verifyReceipt';
 
   try {
-    const response = await axios.post(url, {
+    let response = await axios.post(prodUrl, {
       'receipt-data': token,
       'password': password
     });
+
+    if (response.data.status === 21007) {
+      response = await axios.post(sandboxUrl, {
+        'receipt-data': token,
+        'password': password
+      });
+    }
+
     return response.data.status === 0;
   } catch (error) {
     return false;
