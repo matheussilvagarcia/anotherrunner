@@ -38,3 +38,4 @@ ios/Runner/GoogleService-Info.plist
 firebase-debug.log
 functions/.envios/GoogleService-Info.plist
 android/app/google-services.json
+certificado_upload.pem
