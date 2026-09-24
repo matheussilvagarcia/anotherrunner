@@ -113,7 +113,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String shareRunMessage(String date) {
-    return 'Découvrez ma course sur MovePass le $date !';
+    return 'Découvrez ma course sur YARA - Une autre app de course le $date !';
   }
 
   @override
@@ -455,7 +455,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get locationPermissionDesc =>
-      'MovePass collecte des données de localisation pour permettre le suivi de votre itinéraire, le calcul de la vitesse et de la distance pendant les courses, même lorsque l\'application est fermée ou n\'est pas utilisée.';
+      'YARA collecte des données de localisation pour permettre le suivi de votre itinéraire, le calcul de la vitesse et de la distance pendant les courses, même lorsque l\'application est fermée ou n\'est pas utilisée.';
 
   @override
   String get decline => 'Refuser';
@@ -510,4 +510,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get okBtn => 'OK';
+
+  @override
+  String get registrationError => 'Erreur d\'inscription';
+
+  @override
+  String get signInWithAppleBtn => 'Se connecter avec Apple';
 }

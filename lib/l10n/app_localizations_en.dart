@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboard => 'Dashboard';
 
   @override
-  String get steps => 'steps';
+  String get steps => 'STEPS';
 
   @override
   String get startRun => 'Start Run';
@@ -111,7 +111,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String shareRunMessage(String date) {
-    return 'Check out my run on AnotherRunner on $date!';
+    return 'Check out my run on YARA - Yet another runner app on $date!';
   }
 
   @override
@@ -501,4 +501,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get okBtn => 'OK';
+
+  @override
+  String get registrationError => 'Registration Error';
+
+  @override
+  String get signInWithAppleBtn => 'Sign in with Apple';
 }

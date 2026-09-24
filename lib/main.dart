@@ -8,7 +8,6 @@ import 'login_screen.dart';
 import 'home_screen.dart';
 import 'run_service.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
-import 'purchase_service.dart';
 import 'package:anotherrunner/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -29,7 +28,6 @@ void main() async {
     }
   }
   await initializeService();
-  PurchaseService().initialize();
 
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('isDarkMode') ?? false;
@@ -40,9 +38,10 @@ void main() async {
   }
 
   await FirebaseAppCheck.instance.activate(
-    androidProvider: AndroidProvider.debug,
-    appleProvider: AppleProvider.debug,
+    androidProvider: AndroidProvider.playIntegrity,
+    appleProvider: AppleProvider.appAttest,
   );
+
   FirebaseFirestore.setLoggingEnabled(false);
   runApp(const AnotherRunnerApp());
 }

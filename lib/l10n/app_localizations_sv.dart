@@ -112,7 +112,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String shareRunMessage(String date) {
-    return 'Kolla in min löprunda på MovePass den $date!';
+    return 'Kolla in min löprunda på YARA - Ännu en löparapp den $date!';
   }
 
   @override
@@ -451,7 +451,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get locationPermissionDesc =>
-      'MovePass samlar in platsdata för att möjliggöra spårning av din rutt, beräkning av hastighet och distans under löprundor, även när appen är stängd eller inte används.';
+      'YARA samlar in platsdata för att möjliggöra spårning av din rutt, beräkning av hastighet och distans under löprundor, även när appen är stängd eller inte används.';
 
   @override
   String get decline => 'Neka';
@@ -504,4 +504,10 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get okBtn => 'OK';
+
+  @override
+  String get registrationError => 'Registreringsfel';
+
+  @override
+  String get signInWithAppleBtn => 'Logga in med Apple';
 }

@@ -12,7 +12,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get dashboard => 'Painel';
 
   @override
-  String get steps => 'passos';
+  String get steps => 'PASSOS';
 
   @override
   String get startRun => 'Iniciar Corrida';
@@ -113,7 +113,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String shareRunMessage(String date) {
-    return 'Confira minha corrida no AnotherRunner em $date!';
+    return 'Confira minha corrida no YARA - Mais um app de corrida em $date!';
   }
 
   @override
@@ -508,4 +508,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get okBtn => 'OK';
+
+  @override
+  String get registrationError => 'Erro de Cadastro';
+
+  @override
+  String get signInWithAppleBtn => 'Entrar com a Apple';
 }

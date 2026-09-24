@@ -24,7 +24,14 @@
   "runHistory": "Laufverlauf",
   "authenticationRequired": "Authentifizierung erforderlich",
   "noRunsRecorded": "Noch keine Läufe aufgezeichnet.",
-  "shareRunMessage": "Sieh dir meinen Lauf in MovePass am {date} an!",
+  "shareRunMessage": "Sieh dir meinen Lauf in YARA - Noch eine Lauf-App am {date} an!",
+  "@shareRunMessage": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "capturedByHealthConnect": "Erfasst von Health Connect",
   "activityAverages": "Aktivitätsdurchschnitte",
   "last7Days": "Letzte 7 Tage",
@@ -46,6 +53,19 @@
   "runInProgress": "Lauf im Gange",
   "starting": "Startet...",
   "notificationBody": "Zeit: {time}  |  Dist: {dist} km  |  Pace: {pace}/km",
+  "@notificationBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "dist": {
+        "type": "String"
+      },
+      "pace": {
+        "type": "String"
+      }
+    }
+  },
   "developedBy": "Entwickelt von",
   "contactMe": "Kontaktiere mich",
   "githubProfile": "GitHub-Profil",
@@ -56,6 +76,13 @@
   "errorSendingOtp": "Fehler beim Senden des Bestätigungscodes.",
   "confirmEmailTitle": "Bestätige deine E-Mail",
   "otpSentMessage": "Wir haben einen 6-stelligen Code an {email} gesendet.",
+  "@otpSentMessage": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
   "otpCodeLabel": "OTP-Code",
   "cancelBtn": "Abbrechen",
   "confirmBtn": "Bestätigen",
@@ -109,8 +136,12 @@
   "timeLeft": "Noch {days} Tag(e) und {hours} Stunde(n)",
   "@timeLeft": {
     "placeholders": {
-      "days": {"type": "int"},
-      "hours": {"type": "int"}
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "editCommunity": "Community bearbeiten",
@@ -142,11 +173,11 @@
   "noRewardsDefined": "Keine Belohnungen festgelegt.",
   "history": "Verlauf",
   "noWinner": "Kein Gewinner",
-  "firstPlacePrefix": "🥇 1.: ",
-  "secondPlacePrefix": "🥈 2.: ",
-  "thirdPlacePrefix": "🥉 3.: ",
+  "firstPlacePrefix": "\uD83E\uDD47 1.: ",
+  "secondPlacePrefix": "\uD83E\uDD48 2.: ",
+  "thirdPlacePrefix": "\uD83E\uDD49 3.: ",
   "locationPermissionTitle": "Standortberechtigung",
-  "locationPermissionDesc": "MovePass erfasst Standortdaten, um die Verfolgung deiner Route sowie die Berechnung von Geschwindigkeit und Distanz während des Laufens zu ermöglichen, auch wenn die App geschlossen ist oder nicht verwendet wird.",
+  "locationPermissionDesc": "YARA erfasst Standortdaten, um die Verfolgung deiner Route sowie die Berechnung von Geschwindigkeit und Distanz während des Laufens zu ermöglichen, auch wenn die App geschlossen ist oder nicht verwendet wird.",
   "decline": "Ablehnen",
   "understood": "Verstanden",
   "deleteAccount": "Konto löschen",
@@ -158,9 +189,11 @@
   "deletePermanently": "Dauerhaft löschen",
   "deleteAccountError": "Fehler beim Löschen des Kontos. Bitte melde dich erneut an und versuche es noch einmal.",
   "syncAppleHealth": "Mit Apple Health synchronisieren",
-    "appleHealthSyncSuccess": "Erfolgreich mit Apple Health synchronisiert!",
-    "appleHealthPermissionDenied": "Apple Health-Berechtigungen verweigert.",
-    "checkSpamMessage": "Bitte überprüfen Sie auch Ihren Spam- oder Junk-Ordner.",
-    "resetPasswordTitle": "Passwort zurücksetzen",
-    "okBtn": "OK"
+  "appleHealthSyncSuccess": "Erfolgreich mit Apple Health synchronisiert!",
+  "appleHealthPermissionDenied": "Apple Health-Berechtigungen verweigert.",
+  "checkSpamMessage": "Bitte überprüfen Sie auch Ihren Spam- oder Junk-Ordner.",
+  "resetPasswordTitle": "Passwort zurücksetzen",
+  "okBtn": "OK",
+  "registrationError": "Registrierungsfehler",
+  "signInWithAppleBtn": "Mit Apple anmelden"
 }

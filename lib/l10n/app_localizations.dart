@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @steps.
   ///
   /// In en, this message translates to:
-  /// **'steps'**
+  /// **'STEPS'**
   String get steps;
 
   /// No description provided for @startRun.
@@ -305,7 +305,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareRunMessage.
   ///
   /// In en, this message translates to:
-  /// **'Check out my run on AnotherRunner on {date}!'**
+  /// **'Check out my run on YARA - Yet another runner app on {date}!'**
   String shareRunMessage(String date);
 
   /// No description provided for @dailyActivity.
@@ -1051,6 +1051,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OK'**
   String get okBtn;
+
+  /// No description provided for @registrationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Error'**
+  String get registrationError;
+
+  /// No description provided for @signInWithAppleBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Apple'**
+  String get signInWithAppleBtn;
 }
 
 class _AppLocalizationsDelegate

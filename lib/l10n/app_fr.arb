@@ -20,11 +20,6 @@
   "hcSyncSuccess": "Données synchronisées ! Courses ajoutées à l'historique.",
   "hcNoData": "Aucune donnée de santé trouvée pour aujourd'hui.",
   "hcPermissionDenied": "Autorisation refusée pour accéder aux données de santé.",
-  "locationPermissionRequired": "L'autorisation de localisation est nécessaire pour suivre votre course.",
-  "runHistory": "Historique des courses",
-  "authenticationRequired": "Authentification requise",
-  "noRunsRecorded": "Aucune course enregistrée pour le moment.",
-  "shareRunMessage": "Découvrez ma course sur MovePass le {date} !",
   "capturedByHealthConnect": "Capturé par Health Connect",
   "activityAverages": "Moyennes d'activité",
   "last7Days": "Les 7 derniers jours",
@@ -33,6 +28,18 @@
   "chartCalories": "Calories (kcal)",
   "chartDistance": "Distance (km)",
   "chartDuration": "Durée (min)",
+  "locationPermissionRequired": "L'autorisation de localisation est nécessaire pour suivre votre course.",
+  "runHistory": "Historique des courses",
+  "authenticationRequired": "Authentification requise",
+  "noRunsRecorded": "Aucune course enregistrée pour le moment.",
+  "shareRunMessage": "Découvrez ma course sur YARA - Une autre app de course le {date} !",
+  "@shareRunMessage": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "dailyActivity": "Activité quotidienne",
   "noDailyRecords": "Aucun enregistrement quotidien pour le moment.",
   "unknownDate": "Inconnu",
@@ -46,6 +53,19 @@
   "runInProgress": "Course en cours",
   "starting": "Démarrage...",
   "notificationBody": "Temps : {time}  |  Dist : {dist} km  |  Allure : {pace}/km",
+  "@notificationBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "dist": {
+        "type": "String"
+      },
+      "pace": {
+        "type": "String"
+      }
+    }
+  },
   "developedBy": "Développé par",
   "contactMe": "Me contacter",
   "githubProfile": "Profil GitHub",
@@ -56,6 +76,13 @@
   "errorSendingOtp": "Erreur lors de l'envoi du code de vérification.",
   "confirmEmailTitle": "Confirmez votre e-mail",
   "otpSentMessage": "Nous avons envoyé un code à 6 chiffres à {email}.",
+  "@otpSentMessage": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
   "otpCodeLabel": "Code OTP",
   "cancelBtn": "Annuler",
   "confirmBtn": "Confirmer",
@@ -109,8 +136,12 @@
   "timeLeft": "Il reste {days} jour(s) et {hours} heure(s)",
   "@timeLeft": {
     "placeholders": {
-      "days": {"type": "int"},
-      "hours": {"type": "int"}
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "editCommunity": "Modifier la communauté",
@@ -142,11 +173,11 @@
   "noRewardsDefined": "Aucune récompense définie.",
   "history": "Historique",
   "noWinner": "Aucun gagnant",
-  "firstPlacePrefix": "🥇 1er : ",
-  "secondPlacePrefix": "🥈 2e : ",
-  "thirdPlacePrefix": "🥉 3e : ",
+  "firstPlacePrefix": "\uD83E\uDD47 1er : ",
+  "secondPlacePrefix": "\uD83E\uDD48 2e : ",
+  "thirdPlacePrefix": "\uD83E\uDD49 3e : ",
   "locationPermissionTitle": "Autorisation de localisation",
-  "locationPermissionDesc": "MovePass collecte des données de localisation pour permettre le suivi de votre itinéraire, le calcul de la vitesse et de la distance pendant les courses, même lorsque l'application est fermée ou n'est pas utilisée.",
+  "locationPermissionDesc": "YARA collecte des données de localisation pour permettre le suivi de votre itinéraire, le calcul de la vitesse et de la distance pendant les courses, même lorsque l'application est fermée ou n'est pas utilisée.",
   "decline": "Refuser",
   "understood": "Compris",
   "deleteAccount": "Supprimer le compte",
@@ -158,9 +189,11 @@
   "deletePermanently": "Supprimer définitivement",
   "deleteAccountError": "Erreur lors de la suppression du compte. Veuillez vous reconnecter et réessayer.",
   "syncAppleHealth": "Synchroniser avec Apple Health",
-    "appleHealthSyncSuccess": "Synchronisé avec Apple Health avec succès !",
-    "appleHealthPermissionDenied": "Autorisations Apple Health refusées.",
-    "checkSpamMessage": "Veuillez également vérifier votre dossier de courriers indésirables (spam).",
-    "resetPasswordTitle": "Réinitialiser le mot de passe",
-    "okBtn": "OK"
+  "appleHealthSyncSuccess": "Synchronisé avec Apple Health avec succès !",
+  "appleHealthPermissionDenied": "Autorisations Apple Health refusées.",
+  "checkSpamMessage": "Veuillez également vérifier votre dossier de courriers indésirables (spam).",
+  "resetPasswordTitle": "Réinitialiser le mot de passe",
+  "okBtn": "OK",
+  "registrationError": "Erreur d'inscription",
+  "signInWithAppleBtn": "Se connecter avec Apple"
 }

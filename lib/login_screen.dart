@@ -189,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (e.code == 'email-already-in-use') {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.emailInUsePassword)));
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? 'Registration Error')));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? l10n.registrationError)));
                   }
                 }
                 _toggleLoading();
@@ -338,7 +338,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   OutlinedButton.icon(
                     onPressed: _signInWithApple,
                     icon: const Icon(Icons.apple, color: Colors.black, size: 24),
-                    label: const Text('Sign in with Apple'),
+                    label: Text(l10n.signInWithAppleBtn),
                   ),
                 ],
                 const SizedBox(height: 8),
