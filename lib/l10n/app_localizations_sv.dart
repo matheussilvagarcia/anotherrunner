@@ -510,4 +510,13 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get signInWithAppleBtn => 'Logga in med Apple';
+
+  @override
+  String get deleteRunTitle => 'Radera runda?';
+
+  @override
+  String get deleteRunContent => 'Denna åtgärd kan inte ångras.';
+
+  @override
+  String get delete => 'Radera';
 }

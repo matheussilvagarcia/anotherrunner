@@ -195,5 +195,9 @@
   "resetPasswordTitle": "Återställ lösenord",
   "okBtn": "OK",
   "registrationError": "Registreringsfel",
-  "signInWithAppleBtn": "Logga in med Apple"
+  "signInWithAppleBtn": "Logga in med Apple",
+  "deleteRunTitle": "Radera runda?",
+  "deleteRunContent": "Denna åtgärd kan inte ångras.",
+  "cancel": "Avbryt",
+  "delete": "Radera"
 }

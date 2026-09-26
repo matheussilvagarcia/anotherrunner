@@ -195,5 +195,9 @@
   "resetPasswordTitle": "Passwort zurücksetzen",
   "okBtn": "OK",
   "registrationError": "Registrierungsfehler",
-  "signInWithAppleBtn": "Mit Apple anmelden"
+  "signInWithAppleBtn": "Mit Apple anmelden",
+  "deleteRunTitle": "Lauf löschen?",
+  "deleteRunContent": "Diese Aktion kann nicht rückgängig gemacht werden.",
+  "cancel": "Abbrechen",
+  "delete": "Löschen"
 }

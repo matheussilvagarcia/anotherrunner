@@ -195,5 +195,9 @@
   "resetPasswordTitle": "Redefinir Senha",
   "okBtn": "OK",
   "registrationError": "Erro de Cadastro",
-  "signInWithAppleBtn": "Entrar com a Apple"
+  "signInWithAppleBtn": "Entrar com a Apple",
+  "deleteRunTitle": "Excluir corrida?",
+  "deleteRunContent": "Essa ação não poderá ser desfeita.",
+  "cancel": "Cancelar",
+  "delete": "Excluir"
 }

@@ -195,5 +195,9 @@
   "resetPasswordTitle": "Réinitialiser le mot de passe",
   "okBtn": "OK",
   "registrationError": "Erreur d'inscription",
-  "signInWithAppleBtn": "Se connecter avec Apple"
+  "signInWithAppleBtn": "Se connecter avec Apple",
+  "deleteRunTitle": "Supprimer la course ?",
+  "deleteRunContent": "Cette action est irréversible.",
+  "cancel": "Annuler",
+  "delete": "Supprimer"
 }

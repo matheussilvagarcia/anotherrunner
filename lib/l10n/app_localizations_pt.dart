@@ -514,4 +514,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get signInWithAppleBtn => 'Entrar com a Apple';
+
+  @override
+  String get deleteRunTitle => 'Excluir corrida?';
+
+  @override
+  String get deleteRunContent => 'Essa ação não poderá ser desfeita.';
+
+  @override
+  String get delete => 'Excluir';
 }

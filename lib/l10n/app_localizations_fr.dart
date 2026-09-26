@@ -516,4 +516,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get signInWithAppleBtn => 'Se connecter avec Apple';
+
+  @override
+  String get deleteRunTitle => 'Supprimer la course ?';
+
+  @override
+  String get deleteRunContent => 'Cette action est irréversible.';
+
+  @override
+  String get delete => 'Supprimer';
 }

@@ -1063,6 +1063,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign in with Apple'**
   String get signInWithAppleBtn;
+
+  /// No description provided for @deleteRunTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete run?'**
+  String get deleteRunTitle;
+
+  /// No description provided for @deleteRunContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone.'**
+  String get deleteRunContent;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
 }
 
 class _AppLocalizationsDelegate

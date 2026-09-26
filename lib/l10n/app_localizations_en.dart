@@ -507,4 +507,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInWithAppleBtn => 'Sign in with Apple';
+
+  @override
+  String get deleteRunTitle => 'Delete run?';
+
+  @override
+  String get deleteRunContent => 'This action cannot be undone.';
+
+  @override
+  String get delete => 'Delete';
 }

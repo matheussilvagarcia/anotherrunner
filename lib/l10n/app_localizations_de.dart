@@ -515,4 +515,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get signInWithAppleBtn => 'Mit Apple anmelden';
+
+  @override
+  String get deleteRunTitle => 'Lauf löschen?';
+
+  @override
+  String get deleteRunContent =>
+      'Diese Aktion kann nicht rückgängig gemacht werden.';
+
+  @override
+  String get delete => 'Löschen';
 }
