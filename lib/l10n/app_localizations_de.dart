@@ -525,4 +525,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get delete => 'Löschen';
+
+  @override
+  String get privateLabel => 'Privat';
+
+  @override
+  String get makePublicTooltip => 'Öffentlich machen';
+
+  @override
+  String get makePrivateTooltip => 'Privat machen';
 }

@@ -1081,6 +1081,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get delete;
+
+  /// No description provided for @privateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get privateLabel;
+
+  /// No description provided for @makePublicTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Make Public'**
+  String get makePublicTooltip;
+
+  /// No description provided for @makePrivateTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Make Private'**
+  String get makePrivateTooltip;
 }
 
 class _AppLocalizationsDelegate

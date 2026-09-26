@@ -151,6 +151,8 @@ class _CommunityScreenState extends State<CommunityScreen> {
   }
 
   Future<void> _joinCommunity(String code) async {
+    if (code.trim().isEmpty) return;
+
     final l10n = AppLocalizations.of(context)!;
     setState(() => _isLoading = true);
     final user = FirebaseAuth.instance.currentUser!;
@@ -210,6 +212,17 @@ class _CommunityScreenState extends State<CommunityScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.accessCodeUpdated)));
     }
+  }
+
+  Future<void> _togglePrivacy(bool makePrivate) async {
+    if (_communityId == null) return;
+
+    String newCode = "";
+    if (!makePrivate) {
+      newCode = await _generateUniqueCode();
+    }
+
+    await FirebaseFirestore.instance.collection('communities').doc(_communityId).update({'code': newCode});
   }
 
   Future<void> _updateMemberRole(String memberUid, String newRole) async {
@@ -694,6 +707,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
         final myRole = roles[currentUser.uid] ?? 'member';
         final isSuperior = myRole == 'superior';
         final canManage = isSuperior || myRole == 'admin';
+        final isPrivate = data['code'] == null || data['code'].toString().trim().isEmpty;
 
         return Column(
           children: [
@@ -719,10 +733,26 @@ class _CommunityScreenState extends State<CommunityScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('${l10n.code} ${data['code']}', style: const TextStyle(fontSize: 16, letterSpacing: 1.2)),
-                        IconButton(icon: const Icon(Icons.copy, size: 18), onPressed: () => Clipboard.setData(ClipboardData(text: data['code']))),
-                        if (canManage)
-                          IconButton(icon: const Icon(Icons.refresh, size: 18, color: Colors.blue), onPressed: _refreshCommunityCode),
+                        if (isPrivate)
+                          Text(
+                              l10n.privateLabel,
+                              style: const TextStyle(fontSize: 16, letterSpacing: 1.2, color: Colors.grey, fontWeight: FontWeight.bold)
+                          )
+                        else
+                          Text('${l10n.code} ${data['code']}', style: const TextStyle(fontSize: 16, letterSpacing: 1.2)),
+
+                        if (!isPrivate)
+                          IconButton(icon: const Icon(Icons.copy, size: 18), onPressed: () => Clipboard.setData(ClipboardData(text: data['code']))),
+
+                        if (canManage) ...[
+                          if (!isPrivate)
+                            IconButton(icon: const Icon(Icons.refresh, size: 18, color: Colors.blue), onPressed: _refreshCommunityCode),
+                          IconButton(
+                            icon: Icon(isPrivate ? Icons.lock : Icons.lock_open, size: 18, color: isPrivate ? Colors.red : Colors.green),
+                            tooltip: isPrivate ? l10n.makePublicTooltip : l10n.makePrivateTooltip,
+                            onPressed: () => _togglePrivacy(!isPrivate),
+                          ),
+                        ],
                         IconButton(icon: const Icon(Icons.exit_to_app, size: 18, color: Colors.red), onPressed: () => _leaveCommunity(data)),
                       ],
                     ),

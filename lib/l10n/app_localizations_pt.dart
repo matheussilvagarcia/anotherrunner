@@ -523,4 +523,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get delete => 'Excluir';
+
+  @override
+  String get privateLabel => 'Privada';
+
+  @override
+  String get makePublicTooltip => 'Tornar Pública';
+
+  @override
+  String get makePrivateTooltip => 'Tornar Privada';
 }

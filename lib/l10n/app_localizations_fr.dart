@@ -525,4 +525,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get delete => 'Supprimer';
+
+  @override
+  String get privateLabel => 'Privée';
+
+  @override
+  String get makePublicTooltip => 'Rendre Publique';
+
+  @override
+  String get makePrivateTooltip => 'Rendre Privée';
 }

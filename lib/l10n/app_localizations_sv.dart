@@ -519,4 +519,13 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get delete => 'Radera';
+
+  @override
+  String get privateLabel => 'Privat';
+
+  @override
+  String get makePublicTooltip => 'Gör Offentlig';
+
+  @override
+  String get makePrivateTooltip => 'Gör Privat';
 }

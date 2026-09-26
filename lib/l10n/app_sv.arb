@@ -199,5 +199,8 @@
   "deleteRunTitle": "Radera runda?",
   "deleteRunContent": "Denna åtgärd kan inte ångras.",
   "cancel": "Avbryt",
-  "delete": "Radera"
+  "delete": "Radera",
+  "privateLabel": "Privat",
+  "makePublicTooltip": "Gör Offentlig",
+  "makePrivateTooltip": "Gör Privat"
 }

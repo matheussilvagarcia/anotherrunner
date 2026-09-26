@@ -198,5 +198,8 @@
   "signInWithAppleBtn": "Sign in with Apple",
   "deleteRunTitle": "Delete run?",
   "deleteRunContent": "This action cannot be undone.",
-  "delete": "Delete"
+  "delete": "Delete",
+  "privateLabel": "Private",
+  "makePublicTooltip": "Make Public",
+  "makePrivateTooltip": "Make Private"
 }

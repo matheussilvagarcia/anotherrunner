@@ -199,5 +199,8 @@
   "deleteRunTitle": "Supprimer la course ?",
   "deleteRunContent": "Cette action est irréversible.",
   "cancel": "Annuler",
-  "delete": "Supprimer"
+  "delete": "Supprimer",
+  "privateLabel": "Privée",
+  "makePublicTooltip": "Rendre Publique",
+  "makePrivateTooltip": "Rendre Privée"
 }
