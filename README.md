@@ -1,34 +1,49 @@
-# YARA - Yet another runner app
+### 🇧🇷 Português (PT-BR)
+<p align="center">
+  <img src="images/YARA/screens/1PT.png" width="16%">
+  <img src="images/YARA/screens/2PT.png" width="16%">
+  <img src="images/YARA/screens/3PT.png" width="16%">
+  <img src="images/YARA/screens/4PT.png" width="16%">
+  <img src="images/YARA/screens/5PT.png" width="16%">
+  <img src="images/YARA/screens/6PT.png" width="16%">
+</p>
 
-## Setup and Configuration
+### 🇺🇸 English (EN)
+<p align="center">
+  <img src="images/YARA/screens/1EN.png" width="16%">
+  <img src="images/YARA/screens/2EN.png" width="16%">
+  <img src="images/YARA/screens/3EN.png" width="16%">
+  <img src="images/YARA/screens/4EN.png" width="16%">
+  <img src="images/YARA/screens/5EN.png" width="16%">
+  <img src="images/YARA/screens/6EN.png" width="16%">
+</p>
 
-To run this project locally, you need to set up your own Firebase environment and provide a Google Maps API key.
+### 🇸🇪 Svenska (SV)
+<p align="center">
+  <img src="images/YARA/screens/1SV.png" width="16%">
+  <img src="images/YARA/screens/2SV.png" width="16%">
+  <img src="images/YARA/screens/3SV.png" width="16%">
+  <img src="images/YARA/screens/4SV.png" width="16%">
+  <img src="images/YARA/screens/5SV.png" width="16%">
+  <img src="images/YARA/screens/6SV.png" width="16%">
+</p>
 
-### Firebase Setup
+### 🇩🇪 Deutsch (DE)
+<p align="center">
+  <img src="images/YARA/screens/1DE.png" width="16%">
+  <img src="images/YARA/screens/2DE.png" width="16%">
+  <img src="images/YARA/screens/3DE.png" width="16%">
+  <img src="images/YARA/screens/4DE.png" width="16%">
+  <img src="images/YARA/screens/5DE.png" width="16%">
+  <img src="images/YARA/screens/6DE.png" width="16%">
+</p>
 
-This project uses Firebase for authentication and database.
-
-1. Create a project in the [Firebase Console](https://console.firebase.google.com/).
-2. Enable the authentication providers: Google and Email/Password.
-3. Enable Cloud Firestore.
-4. Install the [FlutterFire CLI](https://firebase.flutter.dev/docs/cli/).
-5. At the root of the project, run: `flutterfire configure` to link the app to your own database.
-
-### Google Maps Configuration
-
-For security reasons, the Maps API key is not included in this repository.
-
-1. Generate an API Key in the [Google Cloud Console](https://console.cloud.google.com/) with Maps SDK for Android enabled.
-2. Open the file `android/local.properties`.
-3. Add the following line at the end of the file:
-   `MAPS_API_KEY=YOUR_API_KEY_HERE`
-
-### Running the App
-
-Once you have configured Firebase and added your Maps API key, you can build the app:
-
-```bash
-git clone [https://github.com/matheussilvagarcia/anotherrunner.git](https://github.com/matheussilvagarcia/anotherrunner.git)
-cd anotherrunner
-flutter pub get
-flutter run
+### 🇫🇷 Français (FR)
+<p align="center">
+  <img src="images/YARA/screens/1FR.png" width="16%">
+  <img src="images/YARA/screens/2FR.png" width="16%">
+  <img src="images/YARA/screens/3FR.png" width="16%">
+  <img src="images/YARA/screens/4FR.png" width="16%">
+  <img src="images/YARA/screens/5FR.png" width="16%">
+  <img src="images/YARA/screens/6FR.png" width="16%">
+</p>
