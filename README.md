@@ -3,7 +3,7 @@
 ---
 
 <p align="center">
-  <img src="images/YARA/Wordmark.png" alt="YARA Logo" width="300">
+  <img src="images/YARA/Banner.png" alt="YARA Banner">
 </p>
 
 <h1 align="center">YARA - Yet another runner app</h1>
@@ -15,10 +15,10 @@
 
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=com.matheussilvagarcia.anotherrunner">
-    <img src="images/Icons/badges/en.svg" alt="Get it on Google Play" height="60">
+    <img src="images/YARA/badges/en.svg" alt="Get it on Google Play" height="60">
   </a>
   <a href="https://apps.apple.com/us/app/yara-yet-another-runner-app/id6760733867">
-    <img src="images/Icons/badges/AppStoreEN.svg" alt="Download on the App Store" height="60">
+    <img src="images/YARA/badges/AppStoreEN.svg" alt="Download on the App Store" height="60">
   </a>
 </p>
 
