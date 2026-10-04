@@ -15,10 +15,10 @@
 
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=com.matheussilvagarcia.anotherrunner">
-    <img src="images/YARA/badges/en.svg" alt="Get it on Google Play" height="60">
+    <img src="images/YARA/badges/en.svg" alt="Get it on Google Play" height="45">
   </a>
   <a href="https://apps.apple.com/us/app/yara-yet-another-runner-app/id6760733867">
-    <img src="images/YARA/badges/AppStoreEN.svg" alt="Download on the App Store" height="60">
+    <img src="images/YARA/badges/AppStoreEN.svg" alt="Download on the App Store" height="65">
   </a>
 </p>
 
@@ -33,7 +33,7 @@
 
 ## Features
 
-* **🏃‍♂️ Accurate Run Tracking**
+* **🏃‍♂️️ Accurate Run Tracking**
   Start a run and let YARA do the heavy lifting. Track your real-time distance, duration, pace, and calories burned using your device's GPS.
 
 * **📅 Running History**
