@@ -18,7 +18,7 @@
     <img src="images/YARA/badges/en.svg" alt="Get it on Google Play" height="45">
   </a>
   <a href="https://apps.apple.com/us/app/yara-yet-another-runner-app/id6760733867">
-    <img src="images/YARA/badges/AppStoreEN.svg" alt="Download on the App Store" height="65">
+    <img src="images/YARA/badges/AppStoreEN.svg" alt="Download on the App Store" height="75">
   </a>
 </p>
 
